@@ -76,10 +76,11 @@ def converter(src, dst):
 
         im = Image.fromarray(im)
 
-        file_path = dcm_list[i]
-        filename = os.path.splitext(os.path.split(file_path)[1])[0]
+        # uncomment for the original name
+        # file_path = dcm_list[i]
+        # filename = os.path.splitext(os.path.split(file_path)[1])[0]
 
-        output_path = os.path.join(dst, filename + '.png')
+        output_path = os.path.join(dst, '{0:01d}'.format(i + 1) + '.png')
 
         im.save(output_path)
 

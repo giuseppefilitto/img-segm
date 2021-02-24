@@ -2,6 +2,7 @@ import os
 import zipfile
 import pydicom
 import shutil
+from pathlib import Path
 from tqdm import trange
 
 
@@ -25,7 +26,7 @@ def clean_text(str):
 
 
 def sorter(input_path, output_path, patience):
-    '''Sorting function for DICOM file by associated information such as the study description and the performed modality.
+    '''
 
     Parameters
     ----------
@@ -38,7 +39,7 @@ def sorter(input_path, output_path, patience):
 
     Returns
     -------
-        organized and sorted data by patience, study description, seires description from the input_path to the output_path .
+        organized and sorted data.
 
     '''
     if not os.path.exists(input_path):
@@ -60,6 +61,7 @@ def sorter(input_path, output_path, patience):
     if len(unsortedList) == 0:
         raise ValueError("No files found")
 
+        '''
     for file in unsortedList:
         if ".dcm" in file:
             # read the dcm file
@@ -81,32 +83,41 @@ def sorter(input_path, output_path, patience):
             except:
                 print('an instance in file   %s - %s" could not be decompressed. exiting.' %
                       (studyDescription, seriesDescription))
+                      '''
+    for file in unsortedList:
+        if ".dcm" in file:
 
-            # save files to a 2-tier nested folder structure
+            ds = pydicom.read_file(file, force=True)
+            instanceNumber = str(ds.get("InstanceNumber", "0"))
 
-            if not os.path.exists(os.path.join(output_path, patience, studyDescription)):
-                os.makedirs(os.path.join(output_path, patience, studyDescription))
+            fileName = instanceNumber + ".dcm"
 
-            if not os.path.exists(os.path.join(output_path, patience, studyDescription, seriesDescription)):
-                os.makedirs(os.path.join(output_path, patience,
-                                         studyDescription, seriesDescription))
+            studyfolder = Path(file).parts[-4]
+            dst = os.path.join(output_path, patience, studyfolder)
 
-            ds.save_as(os.path.join(output_path, patience,
-                                    studyDescription, seriesDescription, fileName))
+            if not os.path.exists(dst):
+                os.makedirs(dst)
+
+            ds.save_as(os.path.join(dst, fileName))
+
         if ".zip" in file:
             path_to_roi = os.path.join(output_path, patience,
                                        os.path.splitext(os.path.split(file)[1])[0])
 
             if not os.path.exists(path_to_roi):
                 os.makedirs(path_to_roi)
+
             with zipfile.ZipFile(file, 'r') as zip_ref:
                 zip_ref.extractall(path_to_roi)
             zip_ref.close()
+
         if ".tiff" in file:
             path_to_tiff = os.path.join(output_path, patience,
                                         os.path.split(os.path.split(file)[0])[1])
+
             if not os.path.exists(path_to_tiff):
                 os.makedirs(path_to_tiff)
+
             shutil.copy(file, path_to_tiff)
 
 

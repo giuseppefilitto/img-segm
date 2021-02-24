@@ -69,15 +69,18 @@ def main():
         x = roi['x']
         y = roi['y']
 
-        img_path = os.path.join(args.src, args.patience, args.type +
-                                "_frames", str(position) + '.png')
+        # to connect first and last point of the ROI
+        x.append(x[0])
+        y.append(y[0])
+
+        img_path = os.path.join(args.src, args.patience, args.type + "AX" + "_frames", str(position) + '.png')
 
         img = cv2.imread(img_path)
 
         plt.figure(1)
         plt.clf()
         plt.imshow(img)
-        plt.plot(x, y, "red")
+        plt.plot(x, y, color='red', linestyle='dashed', linewidth=1)
         plt.title("slice " + str(position))
         plt.pause(1)
 

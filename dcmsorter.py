@@ -6,25 +6,6 @@ from pathlib import Path
 from tqdm import trange
 
 
-def clean_text(str):
-    '''clean and standardize text descriptions.
-
-    Parameters
-    ----------
-    str : string
-        text to be cleaned and standardized.
-
-    Returns
-    -------
-        standardized and cleaned string
-
-    '''
-    forbidden_symbols = ["*", ".", ",", "\"", "\\", "/", "|", "[", "]", ":", ";", " "]
-    for symbol in forbidden_symbols:
-        str = str.replace(symbol, "_")  # replace everything with an underscore
-    return str.lower()
-
-
 def sorter(input_path, output_path, patience):
     '''
 
@@ -61,29 +42,6 @@ def sorter(input_path, output_path, patience):
     if len(unsortedList) == 0:
         raise ValueError("No files found")
 
-        '''
-    for file in unsortedList:
-        if ".dcm" in file:
-            # read the dcm file
-            ds = pydicom.read_file(file, force=True)
-
-            # get study, and series information
-
-            studyDescription = clean_text(ds.get("StudyDescription", "NA"))
-            seriesDescription = clean_text(ds.get("SeriesDescription", "NA"))
-
-            # generate new, standardized file name
-
-            instanceNumber = str(ds.get("InstanceNumber", "0"))
-            fileName = patience + "_" + seriesDescription + "_" + instanceNumber + ".dcm"
-
-            # uncompress files
-            try:
-                ds.decompress()
-            except:
-                print('an instance in file   %s - %s" could not be decompressed. exiting.' %
-                      (studyDescription, seriesDescription))
-                      '''
     for file in unsortedList:
         if ".dcm" in file:
 

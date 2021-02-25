@@ -4,6 +4,24 @@ import pydicom
 import shutil
 from pathlib import Path
 from tqdm import trange
+import argparse
+
+
+def parse_args():
+
+    description = 'Sorting DCM dirs'
+
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('--src', dest='src', required=True, type=str,
+                        action='store', help='source directory')
+    parser.add_argument('--dst', dest='dst', required=False, type=str,
+                        action='store', help='Output directory')
+    parser.add_argument('--patience', dest='patience', required=True, type=str,
+                        action='store', help='Patience name')
+
+    args = parser.parse_args()
+
+    return args
 
 
 def sorter(input_path, output_path, patience):
@@ -79,26 +97,39 @@ def sorter(input_path, output_path, patience):
             shutil.copy(file, path_to_tiff)
 
 
-def main(src, dst):
+def main():
 
-    dirs = os.listdir(src)
+    args = parse_args()
 
-    if ".DS_Store" in dirs:
-        dirs.remove(".DS_Store")
+    if not os.path.isdir(args.src):
+        raise ValueError('Incorrect directory given')
 
-    progress_bar = trange(len(dirs), desc="Sorting in progress")
+    if not args.dst:
 
-    for item in dirs:
-        sorter(os.path.join(src, item), dst, patience=item)
-        progress_bar.update(1)
+        args.dst = '_'.join((args.src, 'sorted'))
+        os.makedirs(args.dst)
 
-    progress_bar.close()
-    print("[done]")
+    if args.patience == "all" or args.patience == "ALL":
+
+        dirs = os.listdir(args.src)
+
+        if ".DS_Store" in dirs:
+            dirs.remove(".DS_Store")  # for mac user
+
+        progress_bar = trange(len(dirs), desc="Sorting in progress")
+
+        for item in dirs:
+            sorter(os.path.join(args.src, item), args.dst, patience=item)
+            progress_bar.update(1)
+
+        progress_bar.close()
+        print("[done]")
+
+    else:
+
+        sorter(os.path.join(args.src, args.patience), args.dst, patience=args.patience)
 
 
 if __name__ == '__main__':
 
-    src = '/Users/giuseppefilitto/Pazienti_anonym'
-    dst = src + '_sorted'
-
-    main(src, dst)
+    main()

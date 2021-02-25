@@ -14,8 +14,8 @@ def parse_args():
                         action='store', help='source directory')
     parser.add_argument('--patience', dest='patience', required=True, type=str,
                         action='store', help='Patience name', default='')
-    parser.add_argument('--type', dest='type', required=True, type=str,
-                        action='store', help='type of weight (i.e. T2 or DWI)', default='T2')
+    parser.add_argument('--weight', dest='weight', required=True, type=str,
+                        action='store', help='weight (i.e. T2 or DWI)', default='T2')
 
     args = parser.parse_args()
 
@@ -29,7 +29,7 @@ def main():
     if not os.path.isdir(args.src):
         raise ValueError('Incorrect directory given')
 
-    roi_dir = os.path.join(args.src, args.patience, args.type + 'ROI')
+    roi_dir = os.path.join(args.src, args.patience, args.weight + 'ROI')
 
     ROIs = []
     for item in os.listdir(roi_dir):
@@ -73,7 +73,16 @@ def main():
         x.append(x[0])
         y.append(y[0])
 
-        img_path = os.path.join(args.src, args.patience, args.type + "AX" + "_frames", str(position) + '.png')
+        img_dir = os.path.join(args.src, args.patience, args.weight)
+
+        if not os.path.isdir(img_dir):
+            img_dir = img_dir + "AX"
+
+            if not os.path.isdir(img_dir):
+                img_dir = os.path.join(args.src, args.patience, args.weight)
+                img_dir = img_dir + "5mm"
+
+        img_path = os.path.join(img_dir + "_frames", str(position) + '.png')
 
         img = cv2.imread(img_path)
 

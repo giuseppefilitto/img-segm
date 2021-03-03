@@ -31,6 +31,12 @@ def main():
 
     roi_dir = os.path.join(args.src, args.patience, args.weight + 'ROI')
 
+    toggle = 0
+    if os.path.isdir(roi_dir + "alta" or roi_dir + "bassa"):
+        inp = input("alta o bassa?: ")
+        roi_dir = roi_dir + str(inp)
+        toggle = 1
+
     ROIs = []
     for item in os.listdir(roi_dir):
 
@@ -77,6 +83,9 @@ def main():
 
         if not os.path.isdir(img_dir):
             img_dir = img_dir + "AX"
+
+            if toggle == 1:
+                img_dir = img_dir + inp
 
             if not os.path.isdir(img_dir):
                 img_dir = os.path.join(args.src, args.patience, args.weight)

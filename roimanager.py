@@ -1,6 +1,6 @@
 from read_roi import read_roi_file
 import os
-import cv2
+import pydicom
 import matplotlib.pyplot as plt
 import argparse
 
@@ -82,13 +82,12 @@ def main():
                 img_dir = os.path.join(args.src, args.patience, args.weight)
                 img_dir = img_dir + "5mm"
 
-        img_path = os.path.join(img_dir + "_frames", str(position) + '.png')
-
-        img = cv2.imread(img_path)
+        img_path = os.path.join(img_dir, str(position) + '.dcm')
+        img = pydicom.dcmread(img_path).pixel_array
 
         plt.figure(1)
         plt.clf()
-        plt.imshow(img)
+        plt.imshow(img, cmap="gray")
         plt.plot(x, y, color='red', linestyle='dashed', linewidth=1)
         plt.title("slice " + str(position))
         plt.pause(1)

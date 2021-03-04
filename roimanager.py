@@ -22,6 +22,28 @@ def parse_args():
     return args
 
 
+def _dict(dict_list):
+    '''
+
+    useful to get true_dict since roi is {name file : true_dict}.
+
+    '''
+
+    true_dict = []
+
+    for i in dict_list:
+        _dict = list(i.values())
+
+        for j in _dict:
+            keys = j.keys()
+            vals = j.values()
+
+            _dict = {key: val for key, val in zip(keys, vals)}
+            true_dict.append(_dict)
+
+    return true_dict
+
+
 def main():
 
     args = parse_args()
@@ -46,28 +68,7 @@ def main():
 
         ROIs.append(roi)
 
-    def _dict(dict_list):
-        '''
-
-        useful to get true_dict since roi is {name file : true_dict}.
-
-        '''
-
-        true_dict = []
-
-        for i in dict_list:
-            _dict = list(i.values())
-
-            for j in _dict:
-                keys = j.keys()
-                vals = j.values()
-
-                _dict = {key: val for key, val in zip(keys, vals)}
-                true_dict.append(_dict)
-
-        return true_dict
-
-    ROIs = _dict(ROIs)
+    ROIs = _dict(ROIs)  # get true_dict list
     ROIs = sorted(ROIs, key=lambda d: list(d.values())[-1])  # ordering dictionaries by positions
 
     for roi in ROIs:
@@ -97,6 +98,7 @@ def main():
         plt.figure(1)
         plt.clf()
         plt.imshow(img, cmap="gray")
+        plt.axis('off')
         plt.plot(x, y, color='red', linestyle='dashed', linewidth=1)
         plt.title("slice " + str(position))
         plt.pause(1)

@@ -64,7 +64,7 @@ def sorter(input_path, output_path, patience):
         if ".dcm" in file:
 
             ds = pydicom.read_file(file, force=True)
-            instanceNumber = str(ds.get("InstanceNumber", "0"))
+            instanceNumber = str(ds.get("InstanceNumber", "0") - 1)
 
             fileName = instanceNumber + ".dcm"
 

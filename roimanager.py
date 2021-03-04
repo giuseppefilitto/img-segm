@@ -1,4 +1,5 @@
 from read_roi import read_roi_file
+import numpy as np
 import os
 import pydicom
 import matplotlib.pyplot as plt
@@ -69,9 +70,14 @@ def main():
         ROIs.append(roi)
 
     ROIs = _dict(ROIs)  # get true_dict list
-    ROIs = sorted(ROIs, key=lambda d: list(d.values())[-1])  # ordering dictionaries by positions
+    # ordering dictionaries by positions
+    ROIs = sorted(ROIs, key=lambda d: list(d.values())[-1])
+
+    # filtering rois with no coordinates
+    ROIs = list(filter(lambda d: d['type'] != 'composite', ROIs))
 
     for roi in ROIs:
+
         position = roi['position']
         x = roi['x']
         y = roi['y']
@@ -92,12 +98,13 @@ def main():
                 img_dir = os.path.join(args.src, args.patience, args.weight)
                 img_dir = img_dir + "5mm"
 
-        img_path = os.path.join(img_dir, str(position) + '.dcm')
+        img_path = os.path.join(img_dir, str(position - 1) + '.dcm')
         img = pydicom.dcmread(img_path).pixel_array
+        img = np.asarray(img)
 
         plt.figure(1)
         plt.clf()
-        plt.imshow(img, cmap="gray")
+        plt.imshow(img[:, :], cmap="gray")
         plt.axis('off')
         plt.plot(x, y, color='red', linestyle='dashed', linewidth=1)
         plt.title("slice " + str(position))

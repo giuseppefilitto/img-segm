@@ -14,6 +14,10 @@ Script that allow to convert DCM folder to .png image series.
 **roimanager**
 
 Script that allow to see the ROIs of a patience over the original images in sequence.
+
+**dcmexplorer**
+
+Interactive explorer for .dcm and .roi files 
 ## Getting Started
 
 #### Prerequisites
@@ -27,6 +31,8 @@ the packages needed to run the scripts are the following:
 - PILLOW
 - matplotlib
 - opencv
+- read_roi
+- ipywidgets
 ```
 #### Installation
 ```
@@ -78,3 +84,9 @@ python -m roimanager --src path/to/source --dst path/to/dest --patience patience
 _note_:
 
 * before running **roimanager**, please ensure to have the ROIs folder as folder/of/images + "ROI"
+
+##### dcmexplorer
+
+Run the script with jupyter in order to use the ipywidgets.
+
+

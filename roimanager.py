@@ -76,11 +76,11 @@ def main():
     # filtering rois with no coordinates
     ROIs = list(filter(lambda d: d['type'] != 'composite', ROIs))
 
-    for roi in ROIs:
+    for i in range(len(ROIs)):
 
-        position = roi['position']
-        x = roi['x']
-        y = roi['y']
+        position = ROIs[i]['position']
+        x = ROIs[i]['x']
+        y = ROIs[i]['y']
 
         # to connect first and last point of the ROI
         x.append(x[0])

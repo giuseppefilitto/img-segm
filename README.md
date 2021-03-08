@@ -17,7 +17,8 @@ Script that allow to see the ROIs of a patience over the original images in sequ
 
 **dcmexplorer**
 
-Interactive explorer for .dcm and .roi files 
+Jupyter notebook made for interact with DCM files. Support for 2D and 3D interactive plot
+
 ## Getting Started
 
 #### Prerequisites
@@ -33,6 +34,7 @@ the packages needed to run the scripts are the following:
 - opencv
 - read_roi
 - ipywidgets
+- plotly
 ```
 #### Installation
 ```
@@ -87,6 +89,8 @@ _note_:
 
 ##### dcmexplorer
 
-Run the script with jupyter in order to use the ipywidgets.
+Jupyter notebook
+
+Run the script with jupyter in order to use the ipywidgets and plotly for a better 2D and 3D experience.
 
 

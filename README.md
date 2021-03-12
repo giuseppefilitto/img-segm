@@ -1,6 +1,8 @@
-# img-utils
+# img-segm
 
-image processing utils.
+The aim of this project is to segment MRI colon-rectal cancer images using ML methods.
+
+## utils
 
 **dcmsorter**
 
@@ -14,7 +16,7 @@ Script that allow to convert DCM folder to .png image series.
 **roimanager**
 
 Script that allow to see the ROIs of a patience over the original images in sequence.
-
+## Jupyter notebook
 **dcmexplorer**
 
 Jupyter notebook made for interact with DCM files. Support for 2D and 3D interactive plot
@@ -33,13 +35,13 @@ the packages needed to run the scripts are the following:
 - matplotlib
 - opencv
 - read_roi
+- scikit-learn
 - ipywidgets
 - plotly
 ```
 #### Installation
 ```
-git clone https://github.com/giuseppefilitto/img-utils
-cd img-utils
+git clone https://github.com/giuseppefilitto/img-segm
 ```
 
 ### Usage

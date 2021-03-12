@@ -2,7 +2,9 @@
 
 The aim of this project is to segment MRI colon-rectal cancer images using ML methods.
 
-## utils
+## Utils
+
+folder of utils scripts to handle DCM files
 
 **dcmsorter**
 
@@ -25,9 +27,7 @@ Jupyter notebook made for interact with DCM files. Support for 2D and 3D interac
 
 #### Prerequisites
 
-The version of python used to run the scripts is: 3.9.1
-
-the packages needed to run the scripts are the following:
+the main packages needed to run the scripts are the following:
 ```
 - numpy
 - pydicom
@@ -48,13 +48,13 @@ git clone https://github.com/giuseppefilitto/img-segm
 
 All the scripts are executable by command line. For a better usage it is recommended to execute all the scripts in the following order:
 
+#### Utils
 ##### dcmsorter
 
 simply run the following command from the bash or PowerShell:
 
 ```
 python -m dcmsorter --src path/to/source --dst path/to/dest --patience patienceID
-
 ```
 
 _notes_:
@@ -89,10 +89,9 @@ _note_:
 
 * before running **roimanager**, please ensure to have the ROIs folder as folder/of/images + "ROI"
 
+#### Jupyter notebook
 ##### dcmexplorer
 
-Jupyter notebook
-
-Run the script with jupyter in order to use the ipywidgets and plotly for a better 2D and 3D experience.
+Run the notebook with jupyter in order to use the ipywidgets and plotly for a better 2D and 3D experience.
 
 

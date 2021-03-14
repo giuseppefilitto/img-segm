@@ -2,7 +2,7 @@
 
 The aim of this project is to segment MRI colon-rectal cancer images using ML methods.
 
-## Utils
+### Utils
 
 folder of utils scripts to handle DCM files
 
@@ -18,12 +18,16 @@ Script that allow to convert DCM folder to .png image series.
 **roimanager**
 
 Script that allow to see the ROIs of a patience over the original images in sequence.
-## Jupyter notebook
-**dcmexplorer**
+### Jupyter notebook
+**img-segm**
 
 Jupyter notebook made for interact with DCM files. 
 
 (Update: Included examples)
+
+### Extras
+
+Extra materials and examples 
 
 ## Getting Started
 
@@ -36,7 +40,7 @@ the main packages needed to run the scripts are the following:
 - PILLOW
 - matplotlib
 - opencv
-- read_roi
+- read_roi 
 - scikit-learn
 - skimage
 - ipywidgets
@@ -92,7 +96,7 @@ _note_:
 * before running **roimanager**, please ensure to have the ROIs folder as folder/of/images + "ROI"
 
 #### Jupyter notebook
-##### dcmexplorer
+##### img-segm
 
 Run the notebook with jupyter in order to use the ipywidgets for a better experience. 
 

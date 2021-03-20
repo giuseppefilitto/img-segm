@@ -6,6 +6,10 @@ import matplotlib.pyplot as plt
 import cv2
 
 
+__author__ = ['Giuseppe Filitto']
+__email__ = ['giuseppe.filitto@studio.unibo.it']
+
+
 def rescale(im, max, min):
     return ((im.astype(float) - min) * (1. / (max - min)) * 255.).astype('uint8')
 
@@ -47,7 +51,7 @@ def get_slice_info(slice):
 
     depth, height, width = slice.shape
     print(
-        f"The image object has the following dimensions: depth:{depth}, height: {height}, width:{width}")
+        f"The image object has the following dimensions: depth:{depth}, height:{height}, width:{width}")
 
 
 def _dict(dict_list):
@@ -102,6 +106,30 @@ def get_rois(roi_path):
     return positions, xs, ys
 
 
+def make_label(slice, layer, positions, xs, ys):
+
+    if not layer in positions:
+        print("no labels found!")
+
+    else:
+        # create layers from given ROI points
+        image = slice[layer, :, :].copy()
+
+        pts = np.array([(x, y) for(x, y) in zip(
+            xs[layer - positions[0]], ys[layer - positions[0]])])
+
+        cv2.drawContours(image, [pts], -1, (255, 255, 255), -1)
+        cv2.polylines(image, [pts], isClosed=True,
+                      color=(255, 255, 255), thickness=1)
+        label = cv2.threshold(image, 254, 255, cv2.THRESH_BINARY)[1]
+
+        # need opening to remove occasional white points
+        kernel = np.ones((5, 5), np.uint8)
+        label = cv2.morphologyEx(label, cv2.MORPH_OPEN, kernel)
+
+        return label
+
+
 def explore_roi(slice, layer, positions, xs, ys):
 
     if not layer in positions:
@@ -122,10 +150,7 @@ def plot_random_layer(slice):
     layer = np.random.randint(0, maxval)
 
     # figure
-    plt.figure(figsize=(12, 7), constrained_layout=True)
-    plt.imshow(slice[layer, :, :], cmap='gray')
-    plt.title(f"Plotting Layer {layer}", fontsize=20)
-    plt.axis('off')
+    explore_slice(slice=slice, layer=layer)
 
 
 def explore_slice(slice, layer):
@@ -143,30 +168,21 @@ def explore_mask(slice, layer, positions, xs, ys):
 
         image = slice[layer, :, :].copy()
 
-        pts = np.array([(x, y) for(x, y) in zip(
-            xs[layer - positions[0]], ys[layer - positions[0]])])
-
-        cv2.drawContours(image, [pts], -1, (255, 255, 255), -1)
-        cv2.polylines(image, [pts], isClosed=True,
-                      color=(255, 255, 255), thickness=1)
-        mask = cv2.threshold(image, 254, 255, cv2.THRESH_BINARY)[1]
-
-        # need opening to remove occasional white points
-        kernel = np.ones((5, 5), np.uint8)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        mask = make_label(slice=slice, layer=layer,
+                          positions=positions, xs=xs, ys=ys)
 
         # figure
         fig, ax = plt.subplots(1, 2, figsize=(12, 7), constrained_layout=True)
-
-        ax[1].imshow(mask, cmap="gray")
-        ax[1].set_title(" ROI Mask")
-        ax[1].axis('off')
 
         ax[0].imshow(slice[layer, :, :], cmap="gray")
         ax[0].plot(xs[layer - positions[0]], ys[layer - positions[0]], color="red",
                    linestyle='dashed', linewidth=1)
         ax[0].set_title("ROI")
         ax[0].axis('off')
+
+        ax[1].imshow(mask, cmap="gray")
+        ax[1].set_title(" ROI Mask")
+        ax[1].axis('off')
 
         fig.suptitle(f"Exploring layer: {layer}",  fontsize=20)
 
@@ -179,19 +195,10 @@ def explore_applied_mask(slice, layer, positions, xs, ys):
 
         image = slice[layer, :, :].copy()
 
-        pts = np.array([(x, y) for(x, y) in zip(
-            xs[layer - positions[0]], ys[layer - positions[0]])])
+        mask = make_label(slice=slice, layer=layer,
+                          positions=positions, xs=xs, ys=ys)
 
-        cv2.drawContours(image, [pts], -1, (255, 255, 255), -1)
-        cv2.polylines(image, [pts], isClosed=True,
-                      color=(255, 255, 255), thickness=1)
-        mask = cv2.threshold(image, 254, 255, cv2.THRESH_BINARY)[1]
-
-        # need opening to remove occasional white points
-        kernel = np.ones((5, 5), np.uint8)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-
-        masked_img = cv2.bitwise_and(
+        applied_masked_img = cv2.bitwise_and(
             slice[layer, :, :].copy(), image, mask=mask)
 
         # figure
@@ -205,7 +212,7 @@ def explore_applied_mask(slice, layer, positions, xs, ys):
         ax[1].set_title("ROI Mask")
         ax[1].axis('off')
 
-        ax[2].imshow(masked_img, cmap="gray")
+        ax[2].imshow(applied_masked_img, cmap="gray")
         ax[2].set_title("Applied ROI mask")
         ax[2].axis('off')
         fig.suptitle(f'Exploring layer {layer}', fontsize=20)

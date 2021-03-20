@@ -1,7 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.ndimage import zoom
 from skimage.restoration import denoise_nl_means, estimate_sigma
 import cv2
+
+from MRIsegm.utils import make_label
+
+__author__ = ['Giuseppe Filitto']
+__email__ = ['giuseppe.filitto@studio.unibo.it']
 
 
 def explore_histogram(slice, layer):
@@ -52,6 +58,7 @@ def manual_tresh(slice, layer, threshold):
 
 
 def adaptive_threshold(slice, layer):
+
     img = image = slice[layer, :, :].copy()
     blur = cv2.medianBlur(img, ksize=5)
 
@@ -75,6 +82,7 @@ def adaptive_threshold(slice, layer):
     ax[2].set_title("Adaptive Threshold Gaussian")
 
     fig.suptitle(f'Exploring layer: {layer}', fontsize=20)
+    plt.show()
 
 
 def otsu_threshold(slice, layer):
@@ -99,6 +107,7 @@ def otsu_threshold(slice, layer):
     ax[1].set_title(f"Otsu")
 
     fig.suptitle(f'Exploring layer: {layer}', fontsize=20)
+    plt.show()
 
 
 def box_fov(slice, layer, threshold):
@@ -133,37 +142,23 @@ def box_fov(slice, layer, threshold):
     ax[2].imshow(masked_otsu, cmap="gray")
     ax[2].axis("off")
     ax[2].set_title(f"Otsu")
+
     fig.suptitle(f'Exploring layer: {layer}', fontsize=20)
+    plt.show()
 
 
-def make_label(slice, layer, positions, xs, ys):
-
-    if not layer in positions:
-        print("no labels found!")
-
-    else:
-        # create layers from given ROI points
-        image = slice[layer, :, :].copy()
-
-        pts = np.array([(x, y) for(x, y) in zip(
-            xs[layer - positions[0]], ys[layer - positions[0]])])
-
-        cv2.drawContours(image, [pts], -1, (255, 255, 255), -1)
-        cv2.polylines(image, [pts], isClosed=True,
-                      color=(255, 255, 255), thickness=1)
-        label = cv2.threshold(image, 254, 255, cv2.THRESH_BINARY)[1]
-
-        # need opening to remove occasional white points
-        kernel = np.ones((5, 5), np.uint8)
-        label = cv2.morphologyEx(label, cv2.MORPH_OPEN, kernel)
-
-        return label
-
-
-def gabor_filter(slice, layer, ksize, sigma, theta, lamb, gamma, psi):
+def gabor_filter(ksize, theta, sigma, lamb, gamma, psi):
 
     kernel = cv2.getGaborKernel(
         (ksize, ksize), sigma, theta, lamb, gamma, psi, ktype=cv2.CV_32F)
+
+    return kernel
+
+
+def show_gabor_filter(slice, layer, ksize, sigma, theta, lamb, gamma, psi):
+
+    kernel = gabor_filter(ksize=ksize, theta=theta,
+                          sigma=sigma, lamb=lamb, gamma=gamma, psi=psi)
 
     img = slice[layer, :, :].copy()
 
@@ -176,7 +171,9 @@ def gabor_filter(slice, layer, ksize, sigma, theta, lamb, gamma, psi):
 
     ax[1].imshow(filtered_img, cmap="gray")
     ax[1].set_title("Filtered image")
+
     fig.suptitle(f'Exploring layer: {layer}', fontsize=20)
+    plt.show()
 
 
 def denoise_nlm(slice, layer, alpha, show=False):
@@ -245,3 +242,149 @@ def denoise_slice(slice, alpha=1.15, patch_size=5, patch_distance=3):
         denoised_slice[layer, :, :] = denoised_img
 
     return denoised_slice.astype('uint8')
+
+
+def zoom_image(img, zoom_factor, **kwargs):
+
+    h, w = img.shape[:2]
+
+    # For multichannel images we don't want to apply the zoom factor to the RGB
+    # dimension, so instead we create a tuple of zoom factors, one per array
+    # dimension, with 1's for any trailing dimensions after the width and height.
+    zoom_tuple = (zoom_factor,) * 2 + (1,) * (img.ndim - 2)
+
+    # Zooming out
+    if zoom_factor < 1:
+
+        # Bounding box of the zoomed-out image within the output array
+        zh = int(np.round(h * zoom_factor))
+        zw = int(np.round(w * zoom_factor))
+        top = (h - zh) // 2
+        left = (w - zw) // 2
+
+        # Zero-padding
+        out = np.zeros_like(img)
+        out[top:top+zh, left:left+zw] = zoom(img, zoom_tuple, **kwargs)
+
+    # Zooming in
+    elif zoom_factor > 1:
+
+        # Bounding box of the zoomed-in region within the input array
+        zh = int(np.round(h / zoom_factor))
+        zw = int(np.round(w / zoom_factor))
+        top = (h - zh) // 2
+        left = (w - zw) // 2
+
+        out = zoom(img[top:top+zh, left:left+zw], zoom_tuple, **kwargs)
+
+        # `out` might still be slightly larger than `img` due to rounding, so
+        # trim off any extra pixels at the edges
+        trim_top = ((out.shape[0] - h) // 2)
+        trim_left = ((out.shape[1] - w) // 2)
+        out = out[trim_top:trim_top+h, trim_left:trim_left+w]
+
+    # If zoom_factor == 1, just return the input array
+    else:
+        out = img
+    return out
+
+
+def compare_zoomed(slice, layer, zoom_factor, show_mask, **kwargs):
+
+    img = slice[layer, :, :].copy()
+    zoomed_img = zoom_image(img=img, zoom_factor=zoom_factor)
+
+    if show_mask:
+
+        positions = kwargs.get('positions', None)
+        xs = kwargs.get('xs', None)
+        ys = kwargs.get('ys', None)
+
+        mask_label = make_label(slice=slice, layer=layer,
+                                positions=positions, xs=xs, ys=ys)
+        zoomed_mask = zoom_image(img=mask_label, zoom_factor=zoom_factor)
+
+        fig, ax = plt.subplots(2, 2, figsize=(12, 8), constrained_layout=True)
+        ax[0][0].imshow(img, cmap="gray")
+        ax[0][0].set_title("original")
+
+        ax[0][1].imshow(zoomed_img, cmap="gray")
+        ax[0][1].set_title(f"zoom x {zoom_factor}")
+
+        ax[1][0].imshow(mask_label, cmap="gray")
+        ax[1][0].set_title("original mask")
+
+        ax[1][1].imshow(zoomed_mask, cmap="gray")
+        ax[1][1].set_title(f"zoom x {zoom_factor}")
+
+        fig.suptitle(f"Exploring layer: {layer}", fontsize=20)
+    else:
+
+        fig, ax = plt.subplots(1, 2, figsize=(12, 8), constrained_layout=True)
+        ax[0].imshow(img, cmap="gray")
+        ax[0].set_title("original")
+
+        ax[1].imshow(zoomed_img, cmap="gray")
+        ax[1].set_title(f"zoom x {zoom_factor}")
+        fig.suptitle(f"Exploring layer: {layer}", fontsize=20)
+
+
+def zoom_slice(slice, zoom_factor):
+
+    zoomed_slice = np.zeros_like(slice)
+
+    for layer in range(slice.shape[0]):
+
+        img = slice[layer, :, :].copy()
+        zoomed_img = zoom_image(img, zoom_factor)
+
+        zoomed_slice[layer, :, :] = zoomed_img
+
+    return zoomed_slice
+
+
+def box_slice_manual(slice, h=150, w=350):
+
+    boxed_slice = np.zeros_like(slice)
+
+    for layer in range(slice.shape[0]):
+
+        img = slice[layer, :, :].copy()
+        box = np.zeros(slice.shape[1:3], np.uint8)
+        box[h:w, h:w] = 255
+
+        boxed_img = cv2.bitwise_and(img, img, mask=box)
+
+        boxed_slice[layer, :, :] = boxed_img
+
+    return boxed_slice_manual
+
+
+def boxer(slice, layer):
+
+    mask = make_labels(slice=slice, layer=layer)
+
+    x, y, w, h = cv2.boundingRect(mask)
+
+    img = slice[layer, :, :].copy()
+    box = cv2.rectangle(mask, (x, y), (x+w, y+h), (255, 255, 255), -1)
+
+    boxed = cv2.bitwise_and(img, img, mask=box)
+
+    return boxed
+
+
+def box_slice(slice):
+
+    boxed_slice = np.zeros_like(slice)
+
+    for layer in range(slice.shape[0]):
+
+        if not layer in positions:
+            boxed_img = 0
+        else:
+            boxed_img = boxer(slice=slice, layer=layer)
+
+        boxed_slice[layer, :, :] = boxed_img
+
+    return boxed_slice

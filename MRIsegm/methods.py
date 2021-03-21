@@ -92,14 +92,34 @@ def load_model(filename):
     return loaded_model
 
 
-def show_model_result(ground_truth, predicted):
+def show_model_result(ground_truth, predicted, show_original=False, **kwargs):
 
-    fig, ax = plt.subplots(1, 2, figsize=(12, 8), constrained_layout=True)
+    if show_original:
 
-    ax[0].imshow(predicted, cmap="gray")
-    ax[0].axis("off")
-    ax[0].set_title("predicted")
+        img = kwargs.get('original')
 
-    ax[1].imshow(ground_truth, cmap="gray")
-    ax[1].axis("off")
-    ax[1].set_title("ground truth")
+        fig, ax = plt.subplots(1, 3, figsize=(12, 8), constrained_layout=True)
+
+        ax[0].imshow(img, cmap="gray")
+        ax[0].axis("off")
+        ax[0].set_title("original")
+
+        ax[1].imshow(ground_truth, cmap="gray")
+        ax[1].axis("off")
+        ax[1].set_title("ground truth")
+
+        ax[2].imshow(predicted, cmap="gray")
+        ax[2].axis("off")
+        ax[2].set_title("predicted")
+
+    else:
+
+        fig, ax = plt.subplots(1, 2, figsize=(12, 8), constrained_layout=True)
+
+        ax[0].imshow(ground_truth, cmap="gray")
+        ax[0].axis("off")
+        ax[0].set_title("ground truth")
+
+        ax[1].imshow(predicted, cmap="gray")
+        ax[1].axis("off")
+        ax[1].set_title("predicted")

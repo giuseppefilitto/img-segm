@@ -360,9 +360,10 @@ def box_slice_manual(slice, h=150, w=350):
     return boxed_slice_manual
 
 
-def boxer(slice, layer):
+def boxer(slice, layer, positions, xs, ys):
 
-    mask = make_labels(slice=slice, layer=layer)
+    mask = make_label(slice=slice, layer=layer,
+                      positions=positions, xs=xs, ys=ys)
 
     x, y, w, h = cv2.boundingRect(mask)
 
@@ -374,7 +375,7 @@ def boxer(slice, layer):
     return boxed
 
 
-def box_slice(slice):
+def box_slice(slice, positions, xs, ys):
 
     boxed_slice = np.zeros_like(slice)
 
@@ -383,8 +384,17 @@ def box_slice(slice):
         if not layer in positions:
             boxed_img = 0
         else:
-            boxed_img = boxer(slice=slice, layer=layer)
+            boxed_img = boxer(slice=slice, layer=layer,
+                              positions=positions, xs=xs, ys=ys)
 
         boxed_slice[layer, :, :] = boxed_img
 
     return boxed_slice
+
+
+def opening(image, ksize):
+
+    kernel = np.ones((ksize, ksize), np.uint8)
+    result = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+
+    return result

@@ -4,7 +4,7 @@ from scipy.ndimage import zoom
 from skimage.restoration import denoise_nl_means, estimate_sigma
 import cv2
 
-from MRIsegm.utils import make_label
+from MRIsegm.utils import make_mask
 
 __author__ = ['Giuseppe Filitto']
 __email__ = ['giuseppe.filitto@studio.unibo.it']
@@ -300,8 +300,8 @@ def compare_zoomed(slice, layer, zoom_factor, show_mask, **kwargs):
         xs = kwargs.get('xs', None)
         ys = kwargs.get('ys', None)
 
-        mask_label = make_label(slice=slice, layer=layer,
-                                positions=positions, xs=xs, ys=ys)
+        mask_label = make_mask(slice=slice, layer=layer,
+                               positions=positions, xs=xs, ys=ys)
         zoomed_mask = zoom_image(img=mask_label, zoom_factor=zoom_factor)
 
         fig, ax = plt.subplots(2, 2, figsize=(12, 8), constrained_layout=True)
@@ -362,8 +362,8 @@ def box_slice_manual(slice, h=150, w=350):
 
 def boxer(slice, layer, positions, xs, ys):
 
-    mask = make_label(slice=slice, layer=layer,
-                      positions=positions, xs=xs, ys=ys)
+    mask = make_mask(slice=slice, layer=layer,
+                     positions=positions, xs=xs, ys=ys)
 
     x, y, w, h = cv2.boundingRect(mask)
 
@@ -398,3 +398,32 @@ def opening(image, ksize):
     result = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
 
     return result
+
+
+def k_means_clustering(img, k, attemps, criteria, show=False):
+
+    img_vect = img.reshape(-1)
+
+    img_vect = np.float32(img_vect)  # samples should be float32
+
+    ret, label, center = cv2.kmeans(
+        img_vect, k, None, criteria, attemps, cv2.KMEANS_PP_CENTERS)
+
+    center = np.uint8(center)
+
+    res_vect = center[label.flatten()]
+
+    res = res_vect.reshape(img.shape)
+
+    if show:
+
+        fig, ax = plt.subplots(1, 2, figsize=(12, 8), constrained_layout=True)
+
+        ax[0].imshow(img, cmap="gray")
+        ax[0].set_title("Original")
+
+        ax[1].imshow(res, cmap="jet")
+        ax[1].set_title(f"k-Means clustering (k = {k})")
+
+    else:
+        return res

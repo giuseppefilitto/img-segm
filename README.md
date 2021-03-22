@@ -1,48 +1,17 @@
-# img-segm
-
-The aim of this project is to segment MRI colon-rectal cancer images using ML methods.
-
-### utils
-
-folder of utils scripts to handle DCM files
-
-##### dcmsorter
-
-Script that allow to order a DCM dataset. If files such as .zip will be unzipped while images like .tiff will be copied from source path to destination path.
+# MRI colon-rectal cancer segmentation
 
 
-##### dcm2img
+Colon-rectal cancer is a malignant neoplasm of the large intestine resulting from the uncontrolled proliferation of one of the cells making up the colon-rectal tract.  
+In Western countries, colorectal cancer is the second largest malignant tumor after that of the breast in women and the third after that of the lung and prostate in men.
+Therefore, radiomic analysis applied to radiological imaging is extremely useful in particular in identifying the regions of interest (ROI) through the application of dedicated radiomic algorithms / features. This process is also known as segmentation.  It can take place manually, semi-automatically and automatically.         
+ The aim of this project is to perform automatic segmentation on Magnetic Resonance (MR) colon-rectal cancer images using ML methods.  
 
-Script that allow to convert DCM folder to .png image series.
 
-##### roimanager
-
-Script that allow to see the ROIs of a patience over the original images in sequence.
-### notebooks
-**dicomexplore**
-
-Jupyter notebook made for visualize and interact with DCM files. 
-
-### extras
-
-Extra materials and examples 
 
 ## Getting Started
 
-#### Prerequisites
 
-the main packages needed to run the scripts are the following:
-```
-- numpy
-- pydicom
-- PILLOW
-- matplotlib
-- opencv
-- read_roi 
-- scikit-learn
-- skimage
-- ipywidgets
-```
+
 #### Installation
 ```
 git clone https://github.com/giuseppefilitto/img-segm
@@ -94,8 +63,3 @@ python -m roimanager --src path/to/source --dst path/to/dest --patience patience
 _note_:
 
 * before running **roimanager**, please ensure to have the ROIs folder as folder/of/images + "ROI"
-
-#### notebooks
-Run the notebook with jupyter in order to use the ipywidgets for a better experience.
-
-

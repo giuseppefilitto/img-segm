@@ -106,7 +106,7 @@ def get_rois(roi_path):
     return positions, xs, ys
 
 
-def make_label(slice, layer, positions, xs, ys):
+def make_mask(slice, layer, positions, xs, ys):
 
     if not layer in positions:
         print("no labels found!")
@@ -168,8 +168,8 @@ def explore_mask(slice, layer, positions, xs, ys):
 
         image = slice[layer, :, :].copy()
 
-        mask = make_label(slice=slice, layer=layer,
-                          positions=positions, xs=xs, ys=ys)
+        mask = make_mask(slice=slice, layer=layer,
+                         positions=positions, xs=xs, ys=ys)
 
         # figure
         fig, ax = plt.subplots(1, 2, figsize=(12, 7), constrained_layout=True)
@@ -195,8 +195,8 @@ def explore_applied_mask(slice, layer, positions, xs, ys):
 
         image = slice[layer, :, :].copy()
 
-        mask = make_label(slice=slice, layer=layer,
-                          positions=positions, xs=xs, ys=ys)
+        mask = make_mask(slice=slice, layer=layer,
+                         positions=positions, xs=xs, ys=ys)
 
         applied_masked_img = cv2.bitwise_and(
             slice[layer, :, :].copy(), image, mask=mask)

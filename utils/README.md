@@ -48,7 +48,7 @@ _notes_:
 simply run the following command from the bash or PowerShell:
 
 ```
-python -m roimanager --src path/to/source --dst path/to/dest --patience patienceID --weight T2 (or DWI)
+python -m roimanager --src path/to/source --patience patienceID --weight T2 (or DWI)
 ```
 
 _note_:

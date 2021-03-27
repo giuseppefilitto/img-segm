@@ -87,58 +87,76 @@ def get_rois(roi_path):
     rois = sorted(rois, key=lambda d: list(d.values())[-1])
     rois = list(filter(lambda d: d['type'] != 'composite', rois))
 
-    positions = []
-    xs = []
-    ys = []
-    for i in range(len(rois)):
-        position = rois[i]['position']
-        x = rois[i]['x']
-        y = rois[i]['y']
-
-        x.append(x[0])
-        y.append(y[0])
-
-        # -1 to match slice layer
-        positions.append(position - 1)
-        xs.append(x)
-        ys.append(y)
-
-    return positions, xs, ys
+    return rois
 
 
-def make_mask(slice, layer, positions, xs, ys):
+def make_mask(slice, layer, rois):
 
+    positions = [rois[i].get('position') - 1 for i in range(len(rois))]
     if not layer in positions:
-        print("no labels found!")
+        raise ValueError("no labels found!")
 
     else:
-        # create layers from given ROI points
-        image = slice[layer, :, :].copy()
 
-        pts = np.array([(x, y) for(x, y) in zip(
-            xs[layer - positions[0]], ys[layer - positions[0]])])
+        background = np.zeros_like(slice[layer, :, :])
 
-        cv2.drawContours(image, [pts], -1, (255, 255, 255), -1)
-        cv2.polylines(image, [pts], isClosed=True,
-                      color=(255, 255, 255), thickness=1)
-        label = cv2.threshold(image, 254, 255, cv2.THRESH_BINARY)[1]
+        roi = list(filter(lambda d: d['position'] == layer + 1, rois))
 
-        # need opening to remove occasional white points
-        kernel = np.ones((5, 5), np.uint8)
-        label = cv2.morphologyEx(label, cv2.MORPH_OPEN, kernel)
+        x = [roi[i].get('x') for i in range(len(roi))]
+        y = [roi[i].get('y') for i in range(len(roi))]
+
+        points = []
+        for i in range(len(x)):
+            pts = np.array([(x, y) for(x, y) in zip(
+                x[i], y[i])])
+            points.append(pts)
+
+        label = cv2.fillPoly(background, points, 255)
 
         return label
 
 
-def explore_roi(slice, layer, positions, xs, ys):
+def mask_slice(slice, rois):
 
-    if not layer in positions:
-        print("No ROI found")
+    masked_slice = np.zeros_like(slice)
+
+    positions = [rois[i].get('position') - 1 for i in range(len(rois))]
+
+    for layer in range(slice.shape[0]):
+
+        if not layer in positions:
+            masked_slice[layer, :, :] = 0
+        else:
+            masked_slice[layer, :, :] = make_mask(
+                slice=slice, layer=layer, rois=rois)
+
+    return masked_slice
+
+
+def explore_roi(slice, layer, rois):
+
+    # -1 to match slice
+    positions = [rois[i].get('position') - 1 for i in range(len(rois))]
+
+    if layer in positions:
+
+        plt.figure(figsize=(12, 7), constrained_layout=True)
+        plt.imshow(slice[layer, :, :], cmap='gray')
+        plt.title(f'Exploring Layer {layer}', fontsize=20)
+        plt.axis('off')
+
+        roi = list(filter(lambda d: d['position'] == layer + 1, rois))
+
+        x = [roi[i].get('x') for i in range(len(roi))]
+        y = [roi[i].get('y') for i in range(len(roi))]
+
+        for i in range(len(x)):
+
+            plt.fill(x[i], y[i], edgecolor='r', fill=False)
+
     else:
         plt.figure(figsize=(12, 7))
         plt.imshow(slice[layer, :, :], cmap='gray')
-        plt.plot(xs[layer - positions[0]], ys[layer - positions[0]], color="red",
-                 linestyle='dashed', linewidth=1)
         plt.title(f'Exploring Layer {layer}', fontsize=20)
         plt.axis('off')
 
@@ -158,61 +176,3 @@ def explore_slice(slice, layer):
     plt.imshow(slice[layer, :, :], cmap='gray')
     plt.title(f'Exploring Layer {layer}', fontsize=20)
     plt.axis('off')
-
-
-def explore_mask(slice, layer, positions, xs, ys):
-
-    if not layer in positions:
-        print("No ROI found")
-    else:
-
-        image = slice[layer, :, :].copy()
-
-        mask = make_mask(slice=slice, layer=layer,
-                         positions=positions, xs=xs, ys=ys)
-
-        # figure
-        fig, ax = plt.subplots(1, 2, figsize=(12, 7), constrained_layout=True)
-
-        ax[0].imshow(slice[layer, :, :], cmap="gray")
-        ax[0].plot(xs[layer - positions[0]], ys[layer - positions[0]], color="red",
-                   linestyle='dashed', linewidth=1)
-        ax[0].set_title("ROI")
-        ax[0].axis('off')
-
-        ax[1].imshow(mask, cmap="gray")
-        ax[1].set_title(" ROI Mask")
-        ax[1].axis('off')
-
-        fig.suptitle(f"Exploring layer: {layer}",  fontsize=20)
-
-
-def explore_applied_mask(slice, layer, positions, xs, ys):
-
-    if not layer in positions:
-        print("No ROI found")
-    else:
-
-        image = slice[layer, :, :].copy()
-
-        mask = make_mask(slice=slice, layer=layer,
-                         positions=positions, xs=xs, ys=ys)
-
-        applied_masked_img = cv2.bitwise_and(
-            slice[layer, :, :].copy(), image, mask=mask)
-
-        # figure
-        fig, ax = plt.subplots(1, 3, figsize=(12, 7), constrained_layout=True)
-
-        ax[0].imshow(slice[layer, :, :], cmap="gray")
-        ax[0].set_title("Original")
-        ax[0].axis('off')
-
-        ax[1].imshow(mask, cmap="gray")
-        ax[1].set_title("ROI Mask")
-        ax[1].axis('off')
-
-        ax[2].imshow(applied_masked_img, cmap="gray")
-        ax[2].set_title("Applied ROI mask")
-        ax[2].axis('off')
-        fig.suptitle(f'Exploring layer {layer}', fontsize=20)

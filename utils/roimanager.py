@@ -76,39 +76,38 @@ def main():
     # filtering rois with no coordinates
     ROIs = list(filter(lambda d: d['type'] != 'composite', ROIs))
 
-    for i in range(len(ROIs)):
+    img_dir = os.path.join(args.src, args.patience, args.weight)
 
-        position = ROIs[i]['position']
-        x = ROIs[i]['x']
-        y = ROIs[i]['y']
+    if not os.path.isdir(img_dir):
+        img_dir = img_dir + "AX"
 
-        # to connect first and last point of the ROI
-        x.append(x[0])
-        y.append(y[0])
-
-        img_dir = os.path.join(args.src, args.patience, args.weight)
-
-        if not os.path.isdir(img_dir):
-            img_dir = img_dir + "AX"
-
-            if toggle == 1:
-                img_dir = img_dir + inp
+        if toggle == 1:
+            img_dir = img_dir + inp
 
             if not os.path.isdir(img_dir):
                 img_dir = os.path.join(args.src, args.patience, args.weight)
                 img_dir = img_dir + "5mm"
 
-        img_path = os.path.join(img_dir, str(position - 1) + '.dcm')
+    positions = [ROIs[i].get('position') - 1 for i in range(len(ROIs))]
+
+    for layer in set(positions):
+
+        img_path = os.path.join(img_dir, str(layer) + '.dcm')
         img = pydicom.dcmread(img_path).pixel_array
         img = np.asarray(img)
 
+        roi = list(filter(lambda d: d['position'] == layer + 1, ROIs))
+
+        x = [roi[i].get('x') for i in range(len(roi))]
+        y = [roi[i].get('y') for i in range(len(roi))]
+
         plt.figure(1)
-        plt.clf()
         plt.imshow(img[:, :], cmap="gray")
+        for i in range(len(x)):
+            plt.fill(x[i], y[i], edgecolor='r', fill=False)
+        plt.title("slice " + str(layer))
         plt.axis('off')
-        plt.plot(x, y, color='red', linestyle='dashed', linewidth=1)
-        plt.title("slice " + str(position))
-        plt.pause(1)
+        plt.show()
 
 
 if __name__ == '__main__':

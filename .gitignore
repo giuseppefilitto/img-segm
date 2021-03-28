@@ -127,3 +127,7 @@ dmypy.json
 #Mac user
 .DS_Store
 .vscode/settings.json
+
+
+#data folder
+data/

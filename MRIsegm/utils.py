@@ -268,29 +268,29 @@ def explore_roi(slice, layer, rois):
       '''
 
     # -1 to match slice
-      positions = [rois[i].get('position') - 1 for i in range(len(rois))]
+    positions = [rois[i].get('position') - 1 for i in range(len(rois))]
 
-       if layer in positions:
+    if layer in positions:
 
-            plt.figure(figsize=(12, 7), constrained_layout=True)
-            plt.imshow(slice[layer, :, :], cmap='gray')
-            plt.title(f'Exploring Layer {layer}', fontsize=20)
-            plt.axis('off')
+        plt.figure(figsize=(12, 7), constrained_layout=True)
+        plt.imshow(slice[layer, :, :], cmap='gray')
+        plt.title(f'Exploring Layer {layer}', fontsize=20)
+        plt.axis('off')
 
-            roi = list(filter(lambda d: d['position'] == layer + 1, rois))
+        roi = list(filter(lambda d: d['position'] == layer + 1, rois))
 
-            x = [roi[i].get('x') for i in range(len(roi))]
-            y = [roi[i].get('y') for i in range(len(roi))]
+        x = [roi[i].get('x') for i in range(len(roi))]
+        y = [roi[i].get('y') for i in range(len(roi))]
 
-            for i in range(len(x)):
+        for i in range(len(x)):
 
-                plt.fill(x[i], y[i], edgecolor='r', fill=False)
+            plt.fill(x[i], y[i], edgecolor='r', fill=False)
 
-        else:
-            plt.figure(figsize=(12, 7))
-            plt.imshow(slice[layer, :, :], cmap='gray')
-            plt.title(f'Exploring Layer {layer}', fontsize=20)
-            plt.axis('off')
+    else:
+        plt.figure(figsize=(12, 7))
+        plt.imshow(slice[layer, :, :], cmap='gray')
+        plt.title(f'Exploring Layer {layer}', fontsize=20)
+        plt.axis('off')
 
 
 def plot_random_layer(slice):
@@ -327,3 +327,36 @@ def explore_slice(slice, layer):
     plt.imshow(slice[layer, :, :], cmap='gray')
     plt.title(f'Exploring Layer {layer}', fontsize=20)
     plt.axis('off')
+
+
+def display_image(img, figsize=(12, 7), **kwargs):
+
+    plt.figure(figsize=(figsize), constrained_layout=True)
+    plt.imshow(img, cmap='gray')
+
+    if kwargs:
+        title = kwargs.get('title')
+
+        if kwargs.get('fontsize'):
+            fontsize = kwargs.get('fontsize')
+            plt.title(title, fontsize=fontsize)
+        else:
+            plt.title(title)
+
+
+def display_images(display_list, figsize=(12, 8), **kwargs):
+
+    plt.figure(figsize=figsize)
+
+    for i in range(len(display_list)):
+        plt.subplot(1, len(display_list), i+1)
+        plt.imshow(display_list[i], cmap='gray')
+        if kwargs.get('titles'):
+            titles = kwargs.get('titles')
+            if kwargs.get('fontsize'):
+                fontsize = kwargs.get('fontsize')
+                plt.title(titles[i], fontsize=fontsize)
+            else:
+                plt.title(titles[i])
+
+    plt.show()

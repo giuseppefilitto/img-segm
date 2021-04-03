@@ -330,6 +330,16 @@ def explore_slice(slice, layer):
 
 
 def display_image(img, figsize=(12, 7), **kwargs):
+    '''
+    Display greyscale image
+
+    Parameters
+    ----------
+    img : image, array_like
+        image to be displayed 
+    figsize : tuple, optional
+        figsize arg of matplotlib module, by default (12, 7)
+    '''
 
     plt.figure(figsize=(figsize), constrained_layout=True)
     plt.imshow(img, cmap='gray')
@@ -345,6 +355,16 @@ def display_image(img, figsize=(12, 7), **kwargs):
 
 
 def display_images(display_list, figsize=(12, 8), **kwargs):
+    '''
+    Display a list of greyscale images
+
+    Parameters
+    ----------
+    display_list : list
+        list of images to be displayed
+    figsize : tuple, optional
+        figsize arg of matplotlib module, by default (12, 8)
+    '''
 
     plt.figure(figsize=figsize)
 

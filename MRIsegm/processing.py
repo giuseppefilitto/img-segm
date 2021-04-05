@@ -198,3 +198,26 @@ def compare_denoised_histo(img, alpha, figsize=(15, 15)):
     plt.subplot(2, 2, 4)
     plt.hist(denoised_img.ravel(), 256, [0, 256], color="black")
     plt.title('Histogram', fontsize=15)
+
+
+def apply_mask(img, mask):
+    '''
+    Apply a mask to the image using bitwise_and from cv2
+
+    Parameters
+    ----------
+    img : image, array_like
+        image to be masked
+    mask : image, array_like
+        black and white image 
+
+    Returns
+    -------
+    applied_mask: image, array_like
+        image where each pixel is the same of the 'img' only if the corrisponding pixel of the mask is white
+    '''
+
+    img = img.copy()
+    applied_mask = cv2.bitwise_and(img, mask, mask=mask)
+
+    return applied_mask

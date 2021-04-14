@@ -8,6 +8,29 @@ __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 
 def create_segmentation_generator_train(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEED):
+    '''
+
+    Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask for model training. The data generation is performed rescaling, rotating and horizontal flipping the images, masks.
+
+    Parameters
+    ----------
+    img_path : str
+        path for the training images directory.
+    mask_path : str
+        path for the training masks directory.
+    BATCH_SIZE : int
+        size of the batches of data.
+    IMG_SIZE : tuple
+        (image height, image width).
+    SEED : int
+        seed for randomness control.
+
+    Returns
+    -------
+    tuples
+        tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask.
+
+    '''
 
     data_gen_args_img = dict(rescale=1./255,
                              #                      featurewise_center=True,
@@ -42,6 +65,29 @@ def create_segmentation_generator_train(img_path, mask_path, BATCH_SIZE, IMG_SIZ
 
 
 def create_segmentation_generator_validation(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEED):
+    '''
+
+    Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask for model validation. The data generation is performed rescaling the images, masks.
+
+    Parameters
+    ----------
+    img_path : str
+        path for the validation images directory.
+    mask_path : str
+        path for the validation masks directory.
+    BATCH_SIZE : int
+        size of the batches of data.
+    IMG_SIZE : tuple
+        (image height, image width).
+    SEED : int
+        seed for randomness control.
+
+    Returns
+    -------
+    tuples
+        tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask.
+
+    '''
 
     data_gen_args = dict(rescale=1./255)
 
@@ -57,6 +103,29 @@ def create_segmentation_generator_validation(img_path, mask_path, BATCH_SIZE, IM
 
 
 def create_segmentation_generator_test(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEED):
+    '''
+
+    Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask for model test. The data generation is performed rescaling the images, masks.
+
+    Parameters
+    ----------
+    img_path : str
+        path for the test images directory.
+    mask_path : str
+        path for the test masks directory.
+    BATCH_SIZE : int
+        size of the batches of data.
+    IMG_SIZE : tuple
+        (image height, image width).
+    SEED : int
+        seed for randomness control.
+
+    Returns
+    -------
+    tuples
+        tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask.
+
+    '''
 
     data_gen_args = dict(rescale=1./255)
 
@@ -72,6 +141,18 @@ def create_segmentation_generator_test(img_path, mask_path, BATCH_SIZE, IMG_SIZE
 
 
 def display(display_list, colormap=False):
+    '''
+
+    Display a list of images: 'Input image', 'True Mask', 'Predicted mask'. It is possibile to show the predicted mask using a seqeuntial colormap (i.e. matplotlib 'gist_heat') from 0.0 to 1.0 setting 'colormap' as True.
+
+    Parameters
+    ----------
+    display_list : list
+        list of input image, true mask and predicted mask.
+    colormap : bool, optional
+        if True show the predicted mask using a seqeuntial colormap (i.e. matplotlib 'gist_heat'), by default False.
+
+    '''
     plt.figure(figsize=(12, 8))
     title = ['Input image', 'True Mask', 'Predicted mask']
     for i in range(len(display_list)):
@@ -98,12 +179,46 @@ def display(display_list, colormap=False):
 
 
 def show_dataset(datagen, num=1):
+    '''
+
+    Show a given number of the first of a batch of data created using datagenerator (i.e. create_segmentation_generator_*).
+
+    Parameters
+    ----------
+    datagen : iterator
+         DirectoryIterator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask.
+    num : int, optional
+        number of (x, y) tuples to be shown, by default 1.
+
+    '''
     for i in range(0, num):
         image, mask = next(datagen)
         display([image[0], mask[0]])
 
 
-def plot_history(model_name, metrics, loss, save=True, custom_metrics=True, custom_loss=False, **kwargs):
+def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=True, custom_loss=False, **kwargs):
+    '''
+
+    Show the model history such as metrics and loss for both training and validation using 'seaborn' style from matplotlib.
+
+    Parameters
+    ----------
+    model_name : str
+        name of the model. It is the suptitle of the plot.
+    history : tf.keras History object
+        result of model.fit(). it is a record of training loss values and metrics values at successive epochs, as well as validation loss values and validation metrics values (if applicable).
+    metrics : list
+        List of metrics to be evaluated by the model during training and testing. Each of this must be a string (name of a built-in function) or custom function (see MRIsegm.metrics).
+    loss : string or a function
+        string of name of a built-in function (i.e. 'binary_crossentropy' from tf.keras.metrics) or a custom function (see MRIsegm.losses).
+    save : bool, optional
+        if saving the plot to the given path which must be given as path='path/to/plot', by default True. 
+    custom_metrics : bool, optional
+        if metrics are all custom function (see MRIsegm.metrics) or not (i.e. 'accuracy' from tf.keras.metrics), by default True.
+    custom_loss : bool, optional
+        if loss is a custom function (see MRIsegm.losses) or not (i.e. 'binary_crossentropy' from tf.keras.metrics), by default False.
+
+    '''
 
     plt.style.use('seaborn')
     plt.figure(figsize=(18, 8))
@@ -152,8 +267,24 @@ def plot_history(model_name, metrics, loss, save=True, custom_metrics=True, cust
     plt.show()
 
 
-def show_prediction(datagen, num=1, colorbar=True):
+def show_prediction(datagen, model, num=1, colormap=True):
+    '''
+
+    Show a given number of [x, y, z] where x is the first input image, y the first true mask created using datagenerator (i.e create_segmentation_generator_test) and z is the predicted mask from x by the given model. The predicted mask is shown using a sequential colormap.
+
+    Parameters
+    ----------
+    datagen : iterator
+         DirectoryIterator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask.
+    model : Keras Model class
+        model used to predict the mask.
+    num : int, optional
+        number of [x, y, z] to be shown, by default 1.
+    colormap : bool, optional
+        if True the predicted mask is shown using a sequential colormap (i.e. matplotlib 'gist_heat'), by default True.
+
+    '''
     for i in range(0, num):
         image, mask = next(datagen)
         pred_mask = model.predict(image)
-        display([image[0], mask[0], pred_mask[0]], colorbar)
+        display([image[0], mask[0], pred_mask[0]], colormap)

@@ -153,6 +153,7 @@ def display(display_list, colormap=False):
         if True show the predicted mask using a seqeuntial colormap (i.e. matplotlib 'gist_heat'), by default False.
 
     '''
+    plt.style.use('default')
     plt.figure(figsize=(12, 8))
     title = ['Input image', 'True Mask', 'Predicted mask']
     for i in range(len(display_list)):
@@ -191,6 +192,7 @@ def show_dataset(datagen, num=1):
         number of (x, y) tuples to be shown, by default 1.
 
     '''
+    plt.style.use('default')
     for i in range(0, num):
         image, mask = next(datagen)
         display([image[0], mask[0]])
@@ -284,6 +286,7 @@ def show_prediction(datagen, model, num=1, colormap=True):
         if True the predicted mask is shown using a sequential colormap (i.e. matplotlib 'gist_heat'), by default True.
 
     '''
+    plt.style.use('default')
     for i in range(0, num):
         image, mask = next(datagen)
         pred_mask = model.predict(image)

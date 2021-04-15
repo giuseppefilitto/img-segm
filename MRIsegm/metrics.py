@@ -1,5 +1,4 @@
 import tensorflow as tf
-import tensorflow.keras.backend as K
 
 
 __author__ = ['Giuseppe Filitto']
@@ -32,9 +31,10 @@ def dice_coef(y_true, y_pred, smooth=1):
 
     '''
 
-    intersection = K.sum(y_true * y_pred, axis=[1, 2, 3])
-    total = K.sum(y_true, axis=[1, 2, 3]) + K.sum(y_pred, axis=[1, 2, 3])
-    dice = K.mean((2. * intersection + smooth) / (total + smooth), axis=0)
+    intersection = tf.reduce_sum(y_true * y_pred, axis=[1, 2, 3])
+    total = tf.reduce_sum(
+        y_true, axis=[1, 2, 3]) + tf.reduce_sum(y_pred, axis=[1, 2, 3])
+    dice = tf.reduce_mean((2. * intersection + smooth) / (total + smooth))
     return dice
 
 
@@ -64,10 +64,10 @@ def iou(y_true, y_pred, smooth=1):
 
     '''
 
-    intersection = K.sum(y_true * y_pred, axis=[1, 2, 3])
-    union = K.sum(y_true, axis=[1, 2, 3]) + \
-        K.sum(y_pred, axis=[1, 2, 3]) - intersection
-    iou = K.mean((intersection + smooth) / (union + smooth), axis=0)
+    intersection = tf.reduce_sum(y_true * y_pred, axis=[1, 2, 3])
+    union = tf.reduce_sum(y_true, axis=[1, 2, 3]) + \
+        tf.reduce_sum(y_pred, axis=[1, 2, 3]) - intersection
+    iou = tf.reduce_mean((intersection + smooth) / (union + smooth))
     return iou
 
 
@@ -102,10 +102,10 @@ def tversky_index(y_true, y_pred, smooth=1, alpha=0.7):
 
     beta = 1 - alpha  # since alpha + beta = 1 cases are of more interest
 
-    true_pos = K.sum(y_true * y_pred, axis=[1, 2, 3])
-    false_neg = K.sum(y_true * (1 - y_pred), axis=[1, 2, 3])
-    false_pos = K.sum((1 - y_true) * y_pred, axis=[1, 2, 3])
-    tversky = K.mean((true_pos + smooth)/(true_pos + alpha *
-                                          false_neg + beta * false_pos + smooth), axis=0)
+    true_pos = tf.reduce_sum(y_true * y_pred, axis=[1, 2, 3])
+    false_neg = tf.reduce_sum(y_true * (1 - y_pred), axis=[1, 2, 3])
+    false_pos = tf.reduce_sum((1 - y_true) * y_pred, axis=[1, 2, 3])
+    tversky = tf.reduce_mean((true_pos + smooth)/(true_pos + alpha *
+                                                  false_neg + beta * false_pos + smooth))
 
     return tversky

@@ -1,5 +1,4 @@
 import tensorflow as tf
-import tensorflow.keras.backend as K
 from MRIsegm.metrics import dice_coef, iou, tversky_index
 
 
@@ -26,8 +25,8 @@ def iou_loss(y_true, y_pred):
 
     '''
 
-    iou = iou(y_true, y_pred)
-    return 1 - iou
+    IoU = iou(y_true, y_pred)
+    return 1 - IoU
 
 
 def tversky_loss(y_true, y_pred):
@@ -75,4 +74,4 @@ def focal_tversky_loss(y_true, y_pred, gamma=1.33):
 
     T = tversky(y_true, y_pred)
 
-    return K.pow((1-T), 1/gamma)
+    return tf.pow((1-T), 1/gamma)

@@ -72,6 +72,6 @@ def focal_tversky_loss(y_true, y_pred, gamma=1.33):
 
     '''
 
-    T = tversky(y_true, y_pred)
+    T = tversky_index(y_true, y_pred)
 
     return tf.pow((1-T), 1/gamma)

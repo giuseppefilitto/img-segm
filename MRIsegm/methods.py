@@ -64,44 +64,6 @@ def create_segmentation_generator_train(img_path, mask_path, BATCH_SIZE, IMG_SIZ
     return zip(img_generator, mask_generator)
 
 
-def create_segmentation_generator_validation(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEED):
-    '''
-
-    Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask for model validation. The data generation is performed rescaling the images, masks.
-
-    Parameters
-    ----------
-    img_path : str
-        path for the validation images directory.
-    mask_path : str
-        path for the validation masks directory.
-    BATCH_SIZE : int
-        size of the batches of data.
-    IMG_SIZE : tuple
-        (image height, image width).
-    SEED : int
-        seed for randomness control.
-
-    Returns
-    -------
-    tuples
-        tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask.
-
-    '''
-
-    data_gen_args = dict(rescale=1./255)
-
-    img_data_gen = ImageDataGenerator(**data_gen_args)
-    mask_data_gen = ImageDataGenerator(**data_gen_args)
-
-    img_generator = img_data_gen.flow_from_directory(
-        img_path, target_size=IMG_SIZE, class_mode=None, color_mode='grayscale', batch_size=BATCH_SIZE, seed=SEED)
-    mask_generator = mask_data_gen.flow_from_directory(
-        mask_path, target_size=IMG_SIZE, class_mode=None, color_mode='grayscale', batch_size=BATCH_SIZE, seed=SEED)
-
-    return zip(img_generator, mask_generator)
-
-
 def create_segmentation_generator_test(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEED):
     '''
 
@@ -249,8 +211,8 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
 
     if custom_loss:
         plt.subplot(1, len(metrics) + 1, len(metrics) + 1)
-        plt.plot(history.history['{}'.format(loss.__name__)])
-        plt.plot(history.history['val_' + '{}'.format(loss.__name__)])
+        plt.plot(history.history['loss'])
+        plt.plot(history.history['val_loss'])
         plt.title('model {}'.format(loss.__name__), fontsize=15)
         plt.xlabel('epoch', fontsize=15)
         plt.ylabel('{}'.format(loss.__name__), fontsize=15)

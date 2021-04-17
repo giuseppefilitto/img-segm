@@ -102,10 +102,10 @@ def create_segmentation_generator_test(img_path, mask_path, BATCH_SIZE, IMG_SIZE
     return zip(img_generator, mask_generator)
 
 
-def display(display_list, colormap=False):
+def display(display_list, colormap=False, cmap='gist_heat', norm=True):
     '''
 
-    Display a list of images: 'Input image', 'True Mask', 'Predicted mask'. It is possibile to show the predicted mask using a seqeuntial colormap (i.e. matplotlib 'gist_heat') from 0.0 to 1.0 setting 'colormap' as True.
+    Display a list of images: 'Input image', 'True Mask', 'Predicted mask'. It is possibile to show the predicted mask using matplotlib cmap setting colormap as True and if norm is set as True the image is normalized from 0. to 1.
 
     Parameters
     ----------
@@ -113,6 +113,10 @@ def display(display_list, colormap=False):
         list of input image, true mask and predicted mask.
     colormap : bool, optional
         if True show the predicted mask using a seqeuntial colormap (i.e. matplotlib 'gist_heat'), by default False.
+    cmap: str
+        matplotlib cmap, by default 'gist_heat'.
+    norm: bool, optional
+        if normalized the predicted mask from 0. to 1., by deafult True.
 
     '''
     plt.style.use('default')
@@ -124,8 +128,12 @@ def display(display_list, colormap=False):
         if i == 2 and colormap == True:
             ax = plt.gca()
 
-            im = ax.imshow((display_list[i]),
-                           cmap='gist_heat', vmin=0.0, vmax=1.0)
+            if norm:
+                im = ax.imshow((display_list[i]),
+                               cmap=cmap, vmin=0.0, vmax=1.0)
+            else:
+                im = ax.imshow((display_list[i]),
+                               cmap=cmap)
 
             axins = inset_axes(ax, width="5%", height="100%", loc='lower left',
                                bbox_to_anchor=(1.02, 0., 1, 1), bbox_transform=ax.transAxes,

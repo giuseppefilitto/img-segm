@@ -29,7 +29,7 @@ def dice_loss(y_true, y_pred):
 
     '''
 
-    smooth = 1e-6  # to avoid 0 division
+    smooth = 1  # to avoid 0 division
     intersection = y_true * y_pred
     total = y_true + y_pred
     dice = tf.reduce_mean((2. * intersection + smooth) /
@@ -62,7 +62,7 @@ def DiceBCEloss(y_true, y_pred):
 
     '''
 
-    smooth = 1e-6  # to avoid 0 division
+    smooth = 1  # to avoid 0 division
 
     bce = binary_crossentropy(y_true, y_pred)
 
@@ -95,7 +95,7 @@ def iou_loss(y_true, y_pred):
 
 
     '''
-    smooth = 1e-6
+    smooth = 1
 
     intersection = y_true * y_pred
     total = y_true + y_pred
@@ -129,7 +129,7 @@ def tversky_loss(y_true, y_pred):
     - https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8759329
 
     '''
-    smooth = 1e-6
+    smooth = 1
     beta = 1 - alpha  # since alpha + beta = 1 cases are of more interest
 
     true_pos = y_true * y_pred

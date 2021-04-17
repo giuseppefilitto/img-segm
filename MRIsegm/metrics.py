@@ -5,7 +5,7 @@ __author__ = ['Giuseppe Filitto']
 __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 
-def dice_coef(y_true, y_pred, smooth=1):
+def dice_coef(y_true, y_pred, smooth=1e-6):
     '''
 
     Dice coefficient, also know as Sørensen-Dice index, is used to gauge the similarity of two samples. Given 2 sets it is defined as  twice the number of elements common to both sets divided by the sum of the number of elements in each set.
@@ -17,7 +17,7 @@ def dice_coef(y_true, y_pred, smooth=1):
     y_pred : Tensor
         predicted tensor with shape: [batch_size, height, width, channels].
     smooth : int, float, optional
-        value that will be added to the numerator and denominator to avoid 0 division, by default 1.
+        value that will be added to the numerator and denominator to avoid 0 division, by default 1e-6.
 
     Returns
     -------
@@ -38,7 +38,7 @@ def dice_coef(y_true, y_pred, smooth=1):
     return dice
 
 
-def iou(y_true, y_pred, smooth=1):
+def iou(y_true, y_pred, smooth=1e-6):
     '''
 
     Intersection over union (IoU) also know as Jaccard coefficient, measures similarity between finite sample sets. Defined as the size of the intersection divided by the size of the union of the sample sets.
@@ -50,7 +50,7 @@ def iou(y_true, y_pred, smooth=1):
     y_pred : Tensor
         predicted tensor with shape: [batch_size, height, width, channels].
     smooth : int, float, optional
-        value that will be added to the numerator and denominator to avoid 0 division, by default 1.
+        value that will be added to the numerator and denominator to avoid 0 division, by default 1e-6.
 
     Returns
     -------
@@ -71,7 +71,7 @@ def iou(y_true, y_pred, smooth=1):
     return iou
 
 
-def tversky_index(y_true, y_pred, smooth=1, alpha=0.7):
+def tversky_index(y_true, y_pred, smooth=1e-6, alpha=0.7):
     '''
 
      The Tversky index is an asymmetric similarity measure on sets that compares a variant to a prototype. The Tversky index can be seen as a generalization of the Sørensen–Dice coefficient and the Jaccard index. Setting alpha = beta = 1 produces the jaccard coefficient, setting alpha = beta = 0.5 produces the Sørensen–Dice coefficient
@@ -84,7 +84,7 @@ def tversky_index(y_true, y_pred, smooth=1, alpha=0.7):
     y_pred : Tensor
         predicted tensor with shape: [batch_size, height, width, channels].
     smooth : int, float, optional
-        value that will be added to the numerator and denominator to avoid 0 division, by default 1.
+        value that will be added to the numerator and denominator to avoid 0 division, by default 1e-6.
     alpha: float, optional
         parameter  of the Tversky index, by default 0.7.
 

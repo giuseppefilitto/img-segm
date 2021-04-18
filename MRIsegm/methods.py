@@ -239,7 +239,7 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
     plt.show()
 
 
-def show_prediction(datagen, model, num=1, colormap=True):
+def show_prediction(datagen, model, num=1, colormap=True, cmap='gist_heat', norm=True):
     '''
 
     Show a given number of [x, y, z] where x is the first input image, y the first true mask created using datagenerator (i.e create_segmentation_generator_test) and z is the predicted mask from x by the given model. The predicted mask is shown using a sequential colormap.
@@ -251,13 +251,17 @@ def show_prediction(datagen, model, num=1, colormap=True):
     model : Keras Model class
         model used to predict the mask.
     num : int, optional
-        number of [x, y, z] to be shown, by default 1.
+        number of rows of images to be shown, by default 1.
     colormap : bool, optional
         if True the predicted mask is shown using a sequential colormap (i.e. matplotlib 'gist_heat'), by default True.
+    cmap: str
+        matplotlib cmap, by default 'gist_heat'.
+    norm: bool, optional
+        if normalized the predicted mask from 0. to 1., by deafult True.
 
     '''
     plt.style.use('default')
     for i in range(0, num):
         image, mask = next(datagen)
         pred_mask = model.predict(image)
-        display([image[0], mask[0], pred_mask[0]], colormap)
+        display([image[0], mask[0], pred_mask[0]], colormap, cmap, norm)

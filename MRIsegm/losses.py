@@ -100,7 +100,7 @@ def iou_loss(y_true, y_pred):
     intersection = y_true * y_pred
     total = y_true + y_pred
     union = total - intersection
-    iou = tf.reduce_mean((2. * intersection + smooth) /
+    iou = tf.reduce_mean((intersection + smooth) /
                          (union + smooth), axis=-1)
     iou_loss = 1. - iou
 
@@ -165,7 +165,7 @@ def focal_tversky_loss(y_true, y_pred):
 
     '''
 
-    smooth = 1e-6
+    smooth = 1
     gamma = 1.33  # by default 1.33. Proposed in range [1,3]
 
     T = tversky_loss(y_true, y_pred)

@@ -209,6 +209,7 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
             plt.title('model  {}'.format(metrics[i].__name__), fontsize=15)
             plt.xlabel('epoch', fontsize=15)
             plt.ylabel('{}'.format(metrics[i].__name__), fontsize=15)
+            plt.legend(['train', 'validation'], loc='best')
 
         else:
             plt.plot(history.history[metrics[i]])
@@ -216,6 +217,7 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
             plt.title('model ' + metrics[i], fontsize=15)
             plt.xlabel('epoch', fontsize=15)
             plt.ylabel(metrics[i], fontsize=15)
+            plt.legend(['train', 'validation'], loc='best')
 
     if custom_loss:
         plt.subplot(1, len(metrics) + 1, len(metrics) + 1)
@@ -224,6 +226,7 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
         plt.title('model {}'.format(loss.__name__), fontsize=15)
         plt.xlabel('epoch', fontsize=15)
         plt.ylabel('{}'.format(loss.__name__), fontsize=15)
+        plt.legend(['train', 'validation'], loc='best')
 
     else:
         plt.subplot(1, len(metrics) + 1, len(metrics) + 1)
@@ -232,6 +235,7 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
         plt.title('model loss', fontsize=15)
         plt.xlabel('epoch', fontsize=15)
         plt.ylabel(loss, fontsize=15)
+        plt.legend(['train', 'validation'], loc='best')
 
     if save:
         path = kwargs.get('path')

@@ -130,6 +130,7 @@ def tversky_loss(y_true, y_pred):
 
     '''
     smooth = 1
+    alpha = 0.7
     beta = 1 - alpha  # since alpha + beta = 1 cases are of more interest
 
     true_pos = y_true * y_pred
@@ -166,6 +167,8 @@ def focal_tversky_loss(y_true, y_pred):
     '''
 
     smooth = 1
+    alpha = 0.7
+    beta = 1 - alpha
     gamma = 1.33  # by default 1.33. Proposed in range [1,3]
 
     T = tversky_loss(y_true, y_pred)

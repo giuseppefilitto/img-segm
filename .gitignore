@@ -75,6 +75,7 @@ docs/_build/
 target/
 
 # Jupyter Notebook
+test*.ipynb
 .ipynb_checkpoints
 
 # IPython
@@ -129,6 +130,9 @@ dmypy.json
 .vscode/settings.json
 
 
-#data folder
+#data 
 data/*
+
+#except for
 !data/plots
+!data/CSV

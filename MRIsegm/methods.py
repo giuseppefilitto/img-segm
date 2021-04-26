@@ -7,92 +7,36 @@ __author__ = ['Giuseppe Filitto']
 __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 
-def create_segmentation_generator_train(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEED):
+def create_segmentation_generator(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEED, data_gen_args_img, data_gen_args_mask):
     '''
 
-    Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask for model training. The data generation is performed rescaling, rotating and horizontal flipping the images, masks.
+    Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask. The data generation is performed using data_gen_args_img and data_gen_args_mask.
 
     Parameters
     ----------
     img_path : str
-        path for the training images directory.
+        path for the images directory.
     mask_path : str
-        path for the training masks directory.
+        path for the masks directory.
     BATCH_SIZE : int
         size of the batches of data.
     IMG_SIZE : tuple
         (image height, image width).
     SEED : int
         seed for randomness control.
-
+    data_gen_args_img: dict
+        dict of keras ImageDataGenerator args for the generation of custom images
+    data_gen_args_mask: dict
+        dict of keras ImageDataGenerator args for the generation of custom masks
     Returns
     -------
     tuples
         tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask.
 
     '''
-
-    data_gen_args_img = dict(rescale=1./255,
-                             #                      featurewise_center=True,
-                             #                      featurewise_std_normalization=True,
-                             rotation_range=5,
-                             #                      width_shift_range=0.2,
-                             #                      height_shift_range=0.2,
-                             #                    zoom_range=0.5,
-                             horizontal_flip=True
-
-                             )
-
-    data_gen_args_mask = dict(rescale=1./255,
-                              #                      featurewise_center=True,
-                              #                      featurewise_std_normalization=True,
-                              rotation_range=5,
-                              #                      width_shift_range=0.2,
-                              #                      height_shift_range=0.2,
-                              #                    zoom_range=0.5,
-                              horizontal_flip=True
-                              )
 
     img_data_gen = ImageDataGenerator(**data_gen_args_img)
     mask_data_gen = ImageDataGenerator(**data_gen_args_mask)
-
-    img_generator = img_data_gen.flow_from_directory(
-        img_path, target_size=IMG_SIZE, class_mode=None, color_mode='grayscale', batch_size=BATCH_SIZE, seed=SEED)
-    mask_generator = mask_data_gen.flow_from_directory(
-        mask_path, target_size=IMG_SIZE, class_mode=None, color_mode='grayscale', batch_size=BATCH_SIZE, seed=SEED)
-
-    return zip(img_generator, mask_generator)
-
-
-def create_segmentation_generator_test(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEED):
-    '''
-
-    Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask for model test. The data generation is performed rescaling the images, masks.
-
-    Parameters
-    ----------
-    img_path : str
-        path for the test images directory.
-    mask_path : str
-        path for the test masks directory.
-    BATCH_SIZE : int
-        size of the batches of data.
-    IMG_SIZE : tuple
-        (image height, image width).
-    SEED : int
-        seed for randomness control.
-
-    Returns
-    -------
-    tuples
-        tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask.
-
-    '''
-
-    data_gen_args = dict(rescale=1./255)
-
-    img_data_gen = ImageDataGenerator(**data_gen_args)
-    mask_data_gen = ImageDataGenerator(**data_gen_args)
 
     img_generator = img_data_gen.flow_from_directory(
         img_path, target_size=IMG_SIZE, class_mode=None, color_mode='grayscale', batch_size=BATCH_SIZE, seed=SEED)

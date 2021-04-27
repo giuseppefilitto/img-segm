@@ -190,7 +190,7 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
 def show_prediction(datagen, model, num=1, colormap=True, cmap='gist_heat', norm=True):
     '''
 
-    Show a given number of [x, y, z] where x is the first input image, y the first true mask created using datagenerator (i.e create_segmentation_generator_test) and z is the predicted mask from x by the given model. The predicted mask is shown using a sequential colormap.
+    Show a given number of [x, y, z] where x is the first input image, y the first true mask created using datagenerator (i.e create_segmentation_generator) and z is the predicted mask from x by the given model. The predicted mask is shown using a sequential colormap.
 
     Parameters
     ----------

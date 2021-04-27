@@ -1,10 +1,17 @@
 import tensorflow as tf
+from tensorflow.keras.layers import Input, Conv2D, MaxPool2D, BatchNormalization, Conv2DTranspose, Concatenate, ReLU, SeparableConv2D, Add
 
 __author__ = ['Giuseppe Filitto']
 __email__ = ['giuseppe.filitto@studio.unibo.it']
 
+########################
 
-def unet(IMAGE_HEIGHT, IMAGE_WIDTH, n_levels=4, initial_features=64, n_conv=2, kernel_size=3, pooling_size=2, in_channels=1, out_channels=1):
+# UNET
+
+########################
+
+
+def unet(IMAGE_HEIGHT, IMAGE_WIDTH, n_levels=4, initial_features=64, n_conv=2, kernel_size=3, pooling_size=2, in_channels=1, out_channels=1, activation="sigmoid"):
     '''
 
     U-Net is a convolutional neural network that was developed for biomedical image segmentation.The network consists of a contracting path and an expansive path, which gives it the u-shaped architecture. The contracting path is a typical convolutional network that consists of repeated application of convolutions, each followed by a rectified linear unit (ReLU) and a max pooling operation. During the contraction, the spatial information is reduced while feature information is increased. The expansive pathway combines the feature and spatial information through a sequence of up-convolutions and concatenations with high-resolution features from the contracting path.
@@ -29,6 +36,8 @@ def unet(IMAGE_HEIGHT, IMAGE_WIDTH, n_levels=4, initial_features=64, n_conv=2, k
         number of input channels, by default 1.
     out_channels : int, optional
         number of output channels, by default 1.
+    activation: str
+        keras activation function name.
 
     Returns
     -------
@@ -43,8 +52,7 @@ def unet(IMAGE_HEIGHT, IMAGE_WIDTH, n_levels=4, initial_features=64, n_conv=2, k
 
     '''
 
-    inputs = tf.keras.layers.Input(
-        shape=(IMAGE_HEIGHT, IMAGE_WIDTH, in_channels))
+    inputs = Input(shape=(IMAGE_HEIGHT, IMAGE_WIDTH, in_channels))
     x = inputs
 
     convpars = dict(kernel_size=kernel_size, activation='relu', padding='same')
@@ -53,24 +61,22 @@ def unet(IMAGE_HEIGHT, IMAGE_WIDTH, n_levels=4, initial_features=64, n_conv=2, k
     skips = {}
     for level in range(n_levels):
         for _ in range(n_conv):
-            x = tf.keras.layers.Conv2D(
-                initial_features * 2 ** level, **convpars)(x)
+            x = Conv2D(initial_features * 2 ** level, **convpars)(x)
         if level < n_levels - 1:
             skips[level] = x
-            x = tf.keras.layers.MaxPool2D(pooling_size)(x)
+            x = MaxPool2D(pooling_size)(x)
 
     # upstream
     for level in reversed(range(n_levels-1)):
-        x = tf.keras.layers.Conv2DTranspose(
-            initial_features * 2 ** level, strides=pooling_size, **convpars)(x)
-        x = tf.keras.layers.Concatenate()([x, skips[level]])
+        x = Conv2DTranspose(initial_features * 2 ** level,
+                            strides=pooling_size, **convpars)(x)
+        x = Concatenate()([x, skips[level]])
         for _ in range(n_conv):
-            x = tf.keras.layers.Conv2D(
-                initial_features * 2 ** level, **convpars)(x)
+            x = Conv2D(initial_features * 2 ** level, **convpars)(x)
 
     # output
-    activation = 'sigmoid' if out_channels == 1 else 'softmax'
-    x = tf.keras.layers.Conv2D(
-        out_channels, kernel_size=1, activation=activation, padding='same')(x)
+
+    x = Conv2D(out_channels, kernel_size=1,
+               activation=activation, padding='same')(x)
 
     return tf.keras.Model(inputs=[inputs], outputs=[x], name=f'UNET-L{n_levels}-F{initial_features}')

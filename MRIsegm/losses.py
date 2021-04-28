@@ -90,7 +90,7 @@ def soft_dice_loss(y_true, y_pred):
 
     '''
 
-    smooth = 1e-5
+    smooth = 1
     intersection = tf.reduce_sum(y_true * y_pred, axis=[1, 2, 3])
     total = tf.reduce_sum(
         y_true**2, axis=[1, 2, 3]) + tf.reduce_sum(y_pred**2, axis=[1, 2, 3])

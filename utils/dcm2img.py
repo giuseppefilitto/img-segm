@@ -15,8 +15,8 @@ def parse_args():
                         action='store', help='source directory')
     parser.add_argument('--dst', dest='dst', required=False, type=str,
                         action='store', help='Output directory')
-    parser.add_argument('--patience', dest='patience', required=False, type=str,
-                        action='store', help='Patience name')
+    parser.add_argument('--patient', dest='patient', required=False, type=str,
+                        action='store', help='patient name')
 
     args = parser.parse_args()
 
@@ -116,9 +116,9 @@ def main():
         if not os.path.isdir(args.dst):
             os.makedirs(args.dst)
 
-    if args.patience:
+    if args.patient:
 
-        if args.patience == "all" or args.patience == "ALL":
+        if args.patient == "all" or args.patient == "ALL":
 
             dirs = os.listdir(args.src)
 
@@ -141,7 +141,8 @@ def main():
 
                 for dir in src_dir:
 
-                    output = os.path.join(args.dst, item, os.path.split(dir)[1])
+                    output = os.path.join(
+                        args.dst, item, os.path.split(dir)[1])
 
                     converter(dir, output)
 
@@ -151,8 +152,8 @@ def main():
 
         else:
 
-            input = os.path.join(args.src, args.patience)
-            output = os.path.join(args.dst, args.patience)
+            input = os.path.join(args.src, args.patient)
+            output = os.path.join(args.dst, args.patient)
 
             list = []
             for root, dirs, files in os.walk(input):
@@ -165,7 +166,8 @@ def main():
 
             for dir in src_dir:
 
-                output = os.path.join(args.dst, args.patience, os.path.split(dir)[1])
+                output = os.path.join(
+                    args.dst, args.patient, os.path.split(dir)[1])
                 converter(dir, output)
 
     else:

@@ -16,15 +16,15 @@ def parse_args():
                         action='store', help='source directory')
     parser.add_argument('--dst', dest='dst', required=False, type=str,
                         action='store', help='Output directory')
-    parser.add_argument('--patience', dest='patience', required=True, type=str,
-                        action='store', help='Patience name')
+    parser.add_argument('--patient', dest='patient', required=True, type=str,
+                        action='store', help='patient name')
 
     args = parser.parse_args()
 
     return args
 
 
-def sorter(input_path, output_path, patience):
+def sorter(input_path, output_path, patient):
     '''
 
     Parameters
@@ -33,8 +33,8 @@ def sorter(input_path, output_path, patience):
         path of source folder.
     output_path : str
         path of destination folder.
-    patience: str
-        ID of the patience
+    patient: str
+        ID of the patient
 
     Returns
     -------
@@ -69,7 +69,7 @@ def sorter(input_path, output_path, patience):
             fileName = instanceNumber + ".dcm"
 
             studyfolder = Path(file).parts[-4]
-            dst = os.path.join(output_path, patience, studyfolder)
+            dst = os.path.join(output_path, patient, studyfolder)
 
             if not os.path.exists(dst):
                 os.makedirs(dst)
@@ -77,7 +77,7 @@ def sorter(input_path, output_path, patience):
             ds.save_as(os.path.join(dst, fileName))
 
         if ".zip" in file:
-            path_to_roi = os.path.join(output_path, patience,
+            path_to_roi = os.path.join(output_path, patient,
                                        os.path.splitext(os.path.split(file)[1])[0])
 
             if not os.path.exists(path_to_roi):
@@ -88,7 +88,7 @@ def sorter(input_path, output_path, patience):
             zip_ref.close()
 
         if ".tiff" in file:
-            path_to_tiff = os.path.join(output_path, patience,
+            path_to_tiff = os.path.join(output_path, patient,
                                         os.path.split(os.path.split(file)[0])[1])
 
             if not os.path.exists(path_to_tiff):
@@ -109,7 +109,7 @@ def main():
         args.dst = '_'.join((args.src, 'sorted'))
         os.makedirs(args.dst)
 
-    if args.patience == "all" or args.patience == "ALL":
+    if args.patient == "all" or args.patient == "ALL":
 
         dirs = os.listdir(args.src)
 
@@ -119,7 +119,7 @@ def main():
         progress_bar = trange(len(dirs), desc="Sorting in progress")
 
         for item in dirs:
-            sorter(os.path.join(args.src, item), args.dst, patience=item)
+            sorter(os.path.join(args.src, item), args.dst, patient=item)
             progress_bar.update(1)
 
         progress_bar.close()
@@ -127,7 +127,8 @@ def main():
 
     else:
 
-        sorter(os.path.join(args.src, args.patience), args.dst, patience=args.patience)
+        sorter(os.path.join(args.src, args.patient),
+               args.dst, patient=args.patient)
 
 
 if __name__ == '__main__':

@@ -131,8 +131,7 @@ dmypy.json
 
 
 #data 
-data/*
-
-#except for
-!data/plots
-!data/CSV
+data/training
+data/validation
+data/models/old
+data/models/checkpoints

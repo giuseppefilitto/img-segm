@@ -50,11 +50,11 @@ class DensityIndexTracker:
         self.index = 0
 
         self.background = ax.imshow(
-            self.slice[self.index, :, :], cmap='gray',  vmin=0.0, vmax=1.0)
+            self.slice[self.index, ...], cmap='gray',  vmin=0.0, vmax=1.0)
         predictions[predictions <= 0.05] = np.nan
 
         self.density = ax.imshow(
-            predictions[self.index, :, :], cmap='magma', vmin=0.0, vmax=1.0, alpha=0.8)
+            predictions[self.index, ...], cmap='magma', vmin=0.0, vmax=1.0, alpha=0.8)
 
         cax = inset_axes(self.ax, width="5%", height="100%", loc='lower left',
                          bbox_to_anchor=(1.02, 0., 1, 1), bbox_transform=self.ax.transAxes,
@@ -71,8 +71,8 @@ class DensityIndexTracker:
         self.update()
 
     def update(self):
-        self.background.set_data(self.slice[self.index, :, :])
-        self.density.set_data(self.predictions[self.index, :, :])
+        self.background.set_data(self.slice[self.index, ...])
+        self.density.set_data(self.predictions[self.index, ...])
         self.ax.set_title(f'Layer: {self.index} / {self.slice.shape[0] -1}')
         self.background.axes.figure.canvas.draw()
         self.density.axes.figure.canvas.draw()
@@ -80,14 +80,14 @@ class DensityIndexTracker:
 
 def parse_args():
 
-    description = 'Predict MRI colon-rectal cancer'
+    description = 'Segmentation of MRI colorectal cancer'
     epilog = 'for more info check https://github.com/giuseppefilitto/img-segm'
 
     parser = argparse.ArgumentParser(description=description, epilog=epilog)
     parser.add_argument('--dir', dest='dir', required=True, type=str,
                         action='store', help='DCM directory')
     parser.add_argument('--model', dest='model', required=False, type=str,
-                        action='store', help='segmentation model (set in default)', default='UNET-L4-F64_128_128_opt=adam_loss=binary_crossentropy')
+                        action='store', help='segmentation model (set in default)', default='UNET-L7-F8_128_128_BATCHNORM_OPT=adam_LOSS=DiceBCEloss')
     parser.add_argument('--mask', dest='mask', action='store_true',
                         help='plot predicted mask', default=False)
     parser.add_argument('--density', dest='density', action='store_true',
@@ -146,7 +146,7 @@ def main():
         print(f"[images rescaled {slice.shape[1:3]} --> {IMG_SIZE}]")
 
     predicted = predict_slice(
-        slice, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold=0)
+        slice, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold=0.1)
 
     resized = resize_slice(slice, IMAGE_HEIGHT, IMAGE_WIDTH)
     countured = contour_slice(resized, predicted)
@@ -159,30 +159,28 @@ def main():
     plt.show()
 
     if args.mask:
+
         fig, ax = plt.subplots(1, 1)
 
-        X = np.squeeze(predicted, axis=-1)
-
-        tracker = IndexTracker(ax=ax, slice=X)
+        tracker = IndexTracker(ax=ax, slice=predicted)
 
         fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
         plt.show()
 
     if args.density:
+
         fig, ax = plt.subplots(1, 1)
 
-        resized = resize_slice(slice, IMAGE_HEIGHT, IMAGE_WIDTH)
-        pred = np.squeeze(predicted, axis=-1)
-
-        tracker = DensityIndexTracker(ax=ax, slice=resized, predictions=pred)
+        tracker = DensityIndexTracker(
+            ax=ax, slice=resized, predictions=predicted.copy())
 
         fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
         plt.show()
 
     if args.mesh3D:
 
-        squeezed = np.squeeze(predicted, axis=-1)
-        verts, faces, _, _ = marching_cubes(squeezed)
+        predicted_sq = np.squeeze(predicted, axis=-1)
+        verts, faces, _, _ = marching_cubes(predicted_sq)
 
         fig = plt.figure(figsize=(10, 8))
         ax = fig.add_subplot(111, projection="3d")

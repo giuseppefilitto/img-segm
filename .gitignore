@@ -127,11 +127,12 @@ dmypy.json
 
 #Mac user
 .DS_Store
+
+#VS-Code
 .vscode/settings.json
 
 
 #data 
-data/training
-data/validation
-data/models/old
-data/models/checkpoints
+data/*
+data/plots/old
+!data/plots

@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage.restoration import denoise_nl_means, estimate_sigma
 import cv2
-from tensorflow.core.protobuf.saved_object_graph_pb2 import _SAVEDOBJECT_SAVEABLEOBJECTSENTRY
 
 
 __author__ = ['Giuseppe Filitto']
@@ -250,7 +249,8 @@ def resize_slice(slice, IMAGE_HEIGHT, IMAGE_WIDTH):
     for layer in range(slice.shape[0]):
         IMG_SIZE = (IMAGE_HEIGHT, IMAGE_WIDTH)
         norm = slice[layer, :, :]*1./255
-        resized = cv2.resize(norm, IMG_SIZE, interpolation=cv2.INTER_CUBIC)
+        resized = cv2.resize(norm.copy(), IMG_SIZE,
+                             interpolation=cv2.INTER_CUBIC)
         resized = resized[np.newaxis, :, :, np.newaxis]
         resized_slice[layer, :, :, :] = resized
 

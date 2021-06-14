@@ -49,7 +49,6 @@ def display(display_list, colormap=False, cmap='gist_heat', norm=True):
             # optional: tf.keras.preprocessing.image.array_to_img, just to rescale from 0.-1. to 0-255
             plt.imshow(tf.keras.preprocessing.image.array_to_img(
                 display_list[i]), cmap='gray')
-
     plt.show()
 
 
@@ -97,8 +96,15 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
     '''
 
     plt.style.use('seaborn')
-    plt.figure(figsize=(18, 8))
-    plt.suptitle('Model: ' + model_name, fontsize=17)
+
+    if kwargs.get('figsize'):
+        figsize = kwargs.get('figsize')
+    else:
+        figsize = (18, 7)
+
+    plt.figure(figsize=figsize)
+    plt.suptitle('Model: ' + model_name, fontsize=15)
+
     if kwargs.get('labelsize'):
         labelsize = kwargs.get('labelsize')
         plt.rc('xtick', labelsize=labelsize)

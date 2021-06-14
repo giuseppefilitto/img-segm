@@ -134,5 +134,4 @@ dmypy.json
 
 #data 
 data/*
-data/plots/old
-!data/plots
+

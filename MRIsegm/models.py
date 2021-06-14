@@ -1,12 +1,13 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Input, Conv2D, MaxPool2D, BatchNormalization, Conv2DTranspose, Concatenate, ReLU
+from tensorflow.keras.layers import Input, Conv2D, MaxPool2D, Conv2DTranspose, Concatenate, Dropout, concatenate, BatchNormalization
+
 
 __author__ = ['Giuseppe Filitto']
 __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 ########################
 
-# UNET
+# ! U-NET
 
 ########################
 
@@ -55,13 +56,18 @@ def unet(IMAGE_HEIGHT, IMAGE_WIDTH, n_levels=4, initial_features=64, n_conv=2, k
     inputs = Input(shape=(IMAGE_HEIGHT, IMAGE_WIDTH, in_channels))
     x = inputs
 
-    convpars = dict(kernel_size=kernel_size, activation='relu', padding='same')
+    convpars_down = dict(kernel_size=kernel_size, activation='relu',
+                         padding='same')
+    convpars_up = dict(kernel_size=kernel_size,
+                       activation='relu', padding='same')
 
     # downstream
     skips = {}
     for level in range(n_levels):
         for _ in range(n_conv):
-            x = Conv2D(initial_features * 2 ** level, **convpars)(x)
+            x = Conv2D(initial_features * 2 ** level, **convpars_down)(x)
+            x = BatchNormalization()(x)
+            x = Dropout(0.1)(x)
         if level < n_levels - 1:
             skips[level] = x
             x = MaxPool2D(pooling_size)(x)
@@ -69,10 +75,10 @@ def unet(IMAGE_HEIGHT, IMAGE_WIDTH, n_levels=4, initial_features=64, n_conv=2, k
     # upstream
     for level in reversed(range(n_levels-1)):
         x = Conv2DTranspose(initial_features * 2 ** level,
-                            strides=pooling_size, **convpars)(x)
+                            strides=pooling_size, **convpars_up)(x)
         x = Concatenate()([x, skips[level]])
         for _ in range(n_conv):
-            x = Conv2D(initial_features * 2 ** level, **convpars)(x)
+            x = Conv2D(initial_features * 2 ** level, **convpars_up)(x)
 
     # output
 

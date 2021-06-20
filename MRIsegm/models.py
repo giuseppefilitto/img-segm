@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Input, Conv2D, MaxPool2D, Conv2DTranspose, Concatenate, Dropout, concatenate, BatchNormalization
+from tensorflow.keras.layers import Input, Conv2D, MaxPool2D, Conv2DTranspose, Concatenate, Dropout, BatchNormalization
 
 
 __author__ = ['Giuseppe Filitto']
@@ -73,7 +73,7 @@ def unet(IMAGE_HEIGHT, IMAGE_WIDTH, n_levels=4, initial_features=64, n_conv=2, k
             x = MaxPool2D(pooling_size)(x)
 
     # upstream
-    for level in reversed(range(n_levels-1)):
+    for level in reversed(range(n_levels - 1)):
         x = Conv2DTranspose(initial_features * 2 ** level,
                             strides=pooling_size, **convpars_up)(x)
         x = Concatenate()([x, skips[level]])

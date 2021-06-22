@@ -49,8 +49,8 @@ def DiceBCEloss(y_true, y_pred):
 
     Returns
     -------
-    Weighted loss float Tensor 
-       dice binary cross-entropy loss. If reduction is NONE, this has shape [batch_size, d0, .. dN-1]; otherwise, it is scalar.
+    Weighted loss float Tensor
+        Dice binary cross-entropy loss. If reduction is NONE, this has shape [batch_size, d0, .. dN-1]; otherwise, it is scalar.
 
     References
     -----------

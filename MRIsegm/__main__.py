@@ -4,8 +4,8 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-from MRIsegm.utils import get_slice
-from MRIsegm.processing import denoise_slice, predict_slice, resize_slice, contour_slice
+from MRIsegm.utils import get_slices
+from MRIsegm.processing import denoise_slices, predict_slices, resize_slices, contour_slices
 from MRIsegm.losses import DiceBCEloss, soft_dice_loss
 from MRIsegm.metrics import dice_coef
 
@@ -15,42 +15,42 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
 class IndexTracker:
-    def __init__(self, ax, slice):
+    def __init__(self, ax, slices):
         self.ax = ax
         ax.set_xlabel('use scroll wheel to navigate layers')
-        self.slice = slice
+        self.slices = slices
         self.index = 0
         try:
-            self.im = ax.imshow(self.slice[self.index, :, :], cmap='gray')
+            self.im = ax.imshow(self.slices[self.index, :, :], cmap='gray')
         except:
-            self.im = ax.imshow(self.slice[self.index, ...])
+            self.im = ax.imshow(self.slices[self.index, ...])
         self.update()
 
     def on_scroll(self, event):
 
         if event.button == 'up':
-            self.index = (self.index + 1) % self.slice.shape[0]
+            self.index = (self.index + 1) % self.slices.shape[0]
         else:
-            self.index = (self.index - 1) % self.slice.shape[0]
+            self.index = (self.index - 1) % self.slices.shape[0]
         self.update()
 
     def update(self):
-        self.im.set_data(self.slice[self.index, ...])
-        self.ax.set_title(f'Layer: {self.index} / {self.slice.shape[0] - 1}')
+        self.im.set_data(self.slices[self.index, ...])
+        self.ax.set_title(f'Slice: {self.index} / {self.slices.shape[0] - 1}')
         self.im.axes.figure.canvas.draw()
 
 
 class DensityIndexTracker:
-    def __init__(self, ax, slice, predictions):
+    def __init__(self, ax, slices, predictions):
         self.ax = ax
-        ax.set_xlabel('use scroll wheel to navigate layers')
+        ax.set_xlabel('use scroll wheel to navigate slices')
 
-        self.slice = slice
+        self.slices = slices
         self.predictions = predictions
         self.index = 0
 
         self.background = ax.imshow(
-            self.slice[self.index, ...], cmap='gray',  vmin=0.0, vmax=1.0)
+            self.slices[self.index, ...], cmap='gray', vmin=0.0, vmax=1.0)
         predictions[predictions <= 0.05] = np.nan
 
         self.density = ax.imshow(
@@ -65,15 +65,15 @@ class DensityIndexTracker:
     def on_scroll(self, event):
 
         if event.button == 'up':
-            self.index = (self.index + 1) % self.slice.shape[0]
+            self.index = (self.index + 1) % self.slices.shape[0]
         else:
-            self.index = (self.index - 1) % self.slice.shape[0]
+            self.index = (self.index - 1) % self.slices.shape[0]
         self.update()
 
     def update(self):
-        self.background.set_data(self.slice[self.index, ...])
+        self.background.set_data(self.slices[self.index, ...])
         self.density.set_data(self.predictions[self.index, ...])
-        self.ax.set_title(f'Layer: {self.index} / {self.slice.shape[0] -1}')
+        self.ax.set_title(f'Slice: {self.index} / {self.slices.shape[0] -1}')
         self.background.axes.figure.canvas.draw()
         self.density.axes.figure.canvas.draw()
 
@@ -107,7 +107,7 @@ def main():
     dir_path = args.dir
 
     try:
-        slice = get_slice(dir_path)
+        slices = get_slices(dir_path)
     except:
         for root, dirs, files in os.walk(dir_path):
             for file in files:
@@ -116,11 +116,11 @@ def main():
                     break
 
         print(f"dcm files from: {dir_path}")
-        slice = get_slice(dir_path)
+        slices = get_slices(dir_path)
 
     print("[denoising...]")
 
-    slice = denoise_slice(slice, 5)
+    slices = denoise_slices(slices, 5)
 
     # model
     models_dir = 'data/models'
@@ -142,18 +142,18 @@ def main():
     IMAGE_WIDTH = 128
     IMG_SIZE = (IMAGE_HEIGHT, IMAGE_WIDTH)
 
-    if slice.shape[1:3] != IMG_SIZE:
-        print(f"[images rescaled {slice.shape[1:3]} --> {IMG_SIZE}]")
+    if slices.shape[1:3] != IMG_SIZE:
+        print(f"[images rescaled {slices.shape[1:3]} --> {IMG_SIZE}]")
 
-    predicted = predict_slice(
-        slice, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold=0.1)
+    predicted = predict_slices(
+        slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold=0.1)
 
-    resized = resize_slice(slice, IMAGE_HEIGHT, IMAGE_WIDTH)
-    countured = contour_slice(resized, predicted)
+    resized = resize_slices(slices, IMAGE_HEIGHT, IMAGE_WIDTH)
+    countured = contour_slices(resized, predicted)
 
     fig, ax = plt.subplots(1, 1)
 
-    tracker = IndexTracker(ax=ax, slice=countured)
+    tracker = IndexTracker(ax=ax, slices=countured)
 
     fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
     plt.show()
@@ -189,8 +189,7 @@ def main():
         ax.set_ylim(np.min(verts[:, 1]), np.max(verts[:, 1]))
         ax.set_zlim(np.min(verts[:, 2]), np.max(verts[:, 2]))
 
-        mesh = Poly3DCollection(
-            verts[faces], edgecolors='teal', facecolors='orange', alpha=0.9)
+        mesh = Poly3DCollection(verts[faces], edgecolors='teal', facecolors='orange', alpha=0.9)
         ax.add_collection3d(mesh)
         plt.tight_layout()
         plt.show()

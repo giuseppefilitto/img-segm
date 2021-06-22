@@ -28,8 +28,7 @@ def rescale(im, max, min):
     rescaled image: array like
         rescaled input image as type uint 8
     '''
-    rescaled_image = ((im.astype(float) - min) *
-                      (1. / (max - min)) * 255.).astype('uint8')
+    rescaled_image = ((im.astype(float) - min) * (1. / (max - min)) * 255.).astype('uint8')
     return rescaled_image
 
 
@@ -63,7 +62,7 @@ def read_slices(filename):
     return pix_arr
 
 
-def get_slice(dir_path):
+def get_slices(dir_path):
     '''
 
     Get full stack of slices from single dcm files ordered by "InstanceNumber" as a rescaled 3d array of shape: depth, height, width
@@ -75,7 +74,7 @@ def get_slice(dir_path):
 
     Returns
     -------
-    slice: array
+    slices: array
          array of shape: depth, height, width , ordered by "InstanceNumber" , rescaled in range (0,255)
     '''
 
@@ -87,30 +86,29 @@ def get_slice(dir_path):
     order = np.argsort(z)
     files = np.asarray(files)[order]
 
-    slice = [read_slices(f) for f in files]
+    slices = [read_slices(f) for f in files]
 
-    Max = max([x.max() for x in slice])
-    Min = min([x.min() for x in slice])
+    Max = max([x.max() for x in slices])
+    Min = min([x.min() for x in slices])
 
-    slice = [rescale(x, Max, Min) for x in slice]
+    slices = [rescale(x, Max, Min) for x in slices]
 
-    slice = np.asarray(slice)
+    slices = np.asarray(slices)
 
-    return slice
+    return slices
 
 
-def get_slice_info(slice):
+def get_slices_info(slices):
     '''
-    Print depth, height, width of the input slice
+    Print depth, height, width of the input slices
 
     Parameters
     ----------
-    slice : array-like
+    slices : array-like
 
     '''
-    depth, height, width = slice.shape
-    print(
-        f"The image object has the following dimensions: depth:{depth}, height:{height}, width:{width}")
+    depth, height, width = slices.shape
+    print(f"The image object has the following dimensions: depth:{depth}, height:{height}, width:{width}")
 
 
 def _dict(dict_list):
@@ -171,23 +169,23 @@ def get_rois(roi_path):
     return rois
 
 
-def make_mask(slice, layer, rois):
+def make_mask(slices, layer, rois):
     '''
-    Generate mask of a given layer of a given slice from given roi
+    Generate mask of a given slice
 
     Parameters
     ----------
-    slice : array
+    slices : array
         array of shape depth, height, width
     layer : int
-        value between (0, slice.shape[0])
+        value between (0, slices.shape[0])
     rois : list
         roi list
 
     Returns
     -------
     label : array
-        return mask of a given layer of a given slice. pixels outside regions of interest are set to 0 (black), pixel inside regions of interest are set to 255 (white)
+        return mask of a given slice. Pixels outside regions of interest are set to 0 (black), pixel inside regions of interest are set to 255 (white)
     Raises
     ------
     ValueError
@@ -195,12 +193,12 @@ def make_mask(slice, layer, rois):
     '''
 
     positions = [rois[i].get('position') - 1 for i in range(len(rois))]
-    if not layer in positions:
+    if layer not in positions:
         raise ValueError("no labels found!")
 
     else:
 
-        background = np.zeros_like(slice[layer, :, :])
+        background = np.zeros_like(slices[layer, :, :])
 
         roi = list(filter(lambda d: d['position'] == layer + 1, rois))
 
@@ -218,14 +216,14 @@ def make_mask(slice, layer, rois):
         return label
 
 
-def mask_slice(slice, rois):
+def mask_slices(slices, rois):
     '''
     Make an array of shape depth, height, width, containing for each layer the proper mask.
-    If no mask if found then masked_slice[layer, :, :] = 0
+    If no mask if found then masked_slices[layer, :, :] = 0
 
     Parameters
     ----------
-    slice : array
+    slices : array
         array of shape depth, height, width
 
     rois : list
@@ -233,35 +231,35 @@ def mask_slice(slice, rois):
 
     Returns
     -------
-    masked_slice : array
+    masked_slices : array
         array of shape: depth, height, width containing for each layer the proper mask
     '''
 
-    masked_slice = np.zeros_like(slice)
+    masked_slices = np.zeros_like(slices)
 
     positions = [rois[i].get('position') - 1 for i in range(len(rois))]
 
-    for layer in range(slice.shape[0]):
+    for layer in range(slices.shape[0]):
 
-        if not layer in positions:
-            masked_slice[layer, :, :] = 0
+        if layer not in positions:
+            masked_slices[layer, :, :] = 0
         else:
-            masked_slice[layer, :, :] = make_mask(
-                slice=slice, layer=layer, rois=rois)
+            masked_slices[layer, :, :] = make_mask(
+                slices=slices, layer=layer, rois=rois)
 
-    return masked_slice
+    return masked_slices
 
 
-def explore_roi(slice, layer, rois):
+def explore_roi(slices, layer, rois):
     '''
-      Show the regions of interest contours from a given layer of a given slice
+      Show the regions of interest contours from a given slice
 
       Parameters
       ----------
-      slice : array
+      slices : array
           array of shape depth, height, width
       layer : int
-          value between (0, slice.shape[0])
+          value between (0, slices.shape[0])
       rois : list
           roi list
 
@@ -273,8 +271,8 @@ def explore_roi(slice, layer, rois):
     if layer in positions:
 
         plt.figure(figsize=(12, 7), constrained_layout=True)
-        plt.imshow(slice[layer, :, :], cmap='gray')
-        plt.title(f'Exploring Layer {layer}', fontsize=20)
+        plt.imshow(slices[layer, :, :], cmap='gray')
+        plt.title(f'Exploring Slice {layer}', fontsize=20)
         plt.axis('off')
 
         roi = list(filter(lambda d: d['position'] == layer + 1, rois))
@@ -289,43 +287,43 @@ def explore_roi(slice, layer, rois):
     else:
         plt.figure(figsize=(12, 7))
         plt.imshow(slice[layer, :, :], cmap='gray')
-        plt.title(f'Exploring Layer {layer}', fontsize=20)
+        plt.title(f'Exploring Slice {layer}', fontsize=20)
         plt.axis('off')
 
 
-def plot_random_layer(slice):
+def plot_random_layer(slices):
     '''
 
-    Show figure of the random layer between (0, slice.shape[0]) of a given slice
+    Show figure of the random slice between (0, slices.shape[0])
 
     Parameters
     ----------
-    slice : array
+    slices : array
         array of shape depth, height, width
     '''
 
-    maxval = slice.shape[0]
+    maxval = slices.shape[0]
     # Select random layer number
     layer = np.random.randint(0, maxval)
 
     # figure
-    explore_slice(slice=slice, layer=layer)
+    explore_slices(slices=slices, layer=layer)
 
 
-def explore_slice(slice, layer):
+def explore_slices(slices, layer):
     '''
-    Show figure of the given layer of a given slice
+    Show figure of the given slice
 
     Parameters
     ----------
-    slice : array
+    slices : array
         array of shape depth, height, width
     layer : int
         value between (0, slice.shape[0])
     '''
     plt.figure(figsize=(12, 7), constrained_layout=True)
-    plt.imshow(slice[layer, :, :], cmap='gray')
-    plt.title(f'Exploring Layer {layer}', fontsize=20)
+    plt.imshow(slices[layer, :, :], cmap='gray')
+    plt.title(f'Exploring Slice {layer}', fontsize=20)
     plt.axis('off')
 
 
@@ -336,7 +334,7 @@ def display_image(img, figsize=(12, 7), **kwargs):
     Parameters
     ----------
     img : image, array_like
-        image to be displayed 
+        image to be displayed
     figsize : tuple, optional
         figsize arg of matplotlib module, by default (12, 7)
     '''
@@ -369,7 +367,7 @@ def display_images(display_list, figsize=(12, 8), **kwargs):
     plt.figure(figsize=figsize)
 
     for i in range(len(display_list)):
-        plt.subplot(1, len(display_list), i+1)
+        plt.subplot(1, len(display_list), i + 1)
         plt.imshow(display_list[i], cmap='gray')
         if kwargs.get('titles'):
             titles = kwargs.get('titles')

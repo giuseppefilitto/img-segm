@@ -20,13 +20,13 @@ def otsu_thresholding(img, **kwargs):
     Returns
     -------
     th  : thresholded image
-        thresholded image using cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU . 
+        thresholded image using cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU.
     '''
     if kwargs.get("gaussian"):
         ksize = kwargs.get("ksize")
         img = cv2.GaussianBlur(img, (ksize, ksize), 0)
 
-    ret, th = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+    ret, th = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
     return th
 
@@ -40,12 +40,12 @@ def add_images(img1, img2):
     img1 : image, array_like
         first input image .
     img2 : image, array_like
-        second input image. 
+        second input image.
 
     Returns
     -------
     combo: image, array_like
-        return img1 + img2. 
+        return img1 + img2.
     '''
     combo = cv2.add(img1, img2)
 
@@ -78,22 +78,22 @@ def show_image_histogram(img, show_original=True):
     plt.show()
 
 
-def show_slice_histogram(slice, layer, show_original=True):
+def show_slice_histogram(slices, layer, show_original=True):
     '''
 
-    Show the histogram of the given layer of the slice.
+    Show the histogram of the given slices of the slices stack.
 
     Parameters
     ----------
-    slice : array
+    slices : array
         array of shape depth, height, width.
     layer : int
-        value between (0, slice.shape[0]).
+        value between (0, slices.shape[0]).
     show_original : bool, optional
         if True show both the image and the histogram otherwise only the histogram, by default True.
     '''
 
-    args = dict(img=slice[layer, :, :], show_original=show_original)
+    args = dict(img=slices[layer, :, :], show_original=show_original)
     show_image_histogram(**args)
     plt.suptitle(f'Layer : {layer}')
 
@@ -121,7 +121,7 @@ def denoise_nlm(img, alpha, show=False, **kwargs):
     sigma = np.mean(estimate_sigma(img, multichannel=False))
 
     denoised_img = denoise_nl_means(
-        img, h=alpha*sigma, multichannel=False, preserve_range=True)
+        img, h=alpha * sigma, multichannel=False, preserve_range=True)
 
     if show:
         figsize = kwargs.get('figsize')
@@ -138,34 +138,34 @@ def denoise_nlm(img, alpha, show=False, **kwargs):
         return denoised_img.astype('uint8')
 
 
-def denoise_slice(slice, alpha=1.15):
+def denoise_slices(slices, alpha=1.15):
     '''
-    Denoise each layer of a the entire slice.
+    Denoise each layer of a the entire slices stack.
 
     Parameters
     ----------
-    slice : array
+    slices : array
         array of shape depth, height, width
     alpha : int, float
         smoothing parameters. A higher value of alpha results in a smoother image, at the expense of blurring features, by default 1.15 .
 
     Returns
     -------
-    denoised_slice: array
+    denoised_slices: array
         array of shape depth, height, width.
     '''
 
-    denoised_slice = np.zeros_like(slice)
+    denoised_slices = np.zeros_like(slices)
 
-    for layer in range(slice.shape[0]):
+    for layer in range(slices.shape[0]):
 
-        img = slice[layer, :, :].copy()
+        img = slices[layer, :, :].copy()
 
         denoised_img = denoise_nlm(img, alpha)
 
-        denoised_slice[layer, :, :] = denoised_img
+        denoised_slices[layer, :, :] = denoised_img
 
-    return denoised_slice
+    return denoised_slices
 
 
 def compare_denoised_histo(img, alpha, figsize=(15, 15)):
@@ -223,14 +223,14 @@ def apply_mask(img, mask):
     return applied_mask
 
 
-def resize_slice(slice, IMAGE_HEIGHT, IMAGE_WIDTH):
+def resize_slices(slices, IMAGE_HEIGHT, IMAGE_WIDTH):
     '''
 
-    Resize a slice to shape = (layers, height, width) to shape = (layers, height, width, 1).
+    Resize slices to shape = (layers, height, width) to shape = (layers, height, width, 1).
 
     Parameters
     ----------
-    slice : numpy array 
+    slices : numpy array
         Numpy array of shape = (layers, height, width).
     IMAGE_HEIGHT : int
         image height.
@@ -243,27 +243,25 @@ def resize_slice(slice, IMAGE_HEIGHT, IMAGE_WIDTH):
         resized array of shape (layers, height, width, 1) where 1 denotes the number of channels.
     '''
 
-    resized_slice = np.zeros(
-        shape=(slice.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH, 1), dtype=np.float32)
+    resized_slices = np.zeros(shape=(slices.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH, 1), dtype=np.float32)
 
-    for layer in range(slice.shape[0]):
+    for layer in range(slices.shape[0]):
         IMG_SIZE = (IMAGE_HEIGHT, IMAGE_WIDTH)
-        norm = slice[layer, :, :]*1./255
-        resized = cv2.resize(norm.copy(), IMG_SIZE,
-                             interpolation=cv2.INTER_CUBIC)
+        norm = slices[layer, :, :] * 1. / 255
+        resized = cv2.resize(norm.copy(), IMG_SIZE, interpolation=cv2.INTER_CUBIC)
         resized = resized[np.newaxis, :, :, np.newaxis]
-        resized_slice[layer, :, :, :] = resized
+        resized_slices[layer, :, :, :] = resized
 
-    return resized_slice
+    return resized_slices
 
 
-def predict_slice(slice, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold):
+def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold):
     '''
-    Create a slice of predicted layers using the given model.
+    Create stack of predicted slice mask using the given model.
 
     Parameters
     ----------
-    slice : numpy array
+    slices : numpy array
          Numpy array of shape = (layers, height, width, 1).
     model :  Keras model instance
         loaded .h5 keras model by tf.keras.model.load_model() .
@@ -272,55 +270,55 @@ def predict_slice(slice, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold):
     IMAGE_WIDTH : int
         image width.
     threshold : float
-        min threshold value 
+        min threshold value.
 
     Returns
     -------
     numpy array
-        array of shape = (layers, height, width, 1) where each layer is the slice predicted layer.
+        array of shape = (layers, height, width, 1).
     '''
 
-    predicted_slice = np.zeros(
-        shape=(slice.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH, 1), dtype=np.float32)
+    predicted_slices = np.zeros(
+        shape=(slices.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH, 1), dtype=np.float32)
 
-    for layer in range(slice.shape[0]):
+    for layer in range(slices.shape[0]):
 
         IMG_SIZE = (IMAGE_HEIGHT, IMAGE_WIDTH)
-        norm = slice[layer, :, :]*1./255
+        norm = slices[layer, :, :] * 1. / 255
         resized = cv2.resize(norm, IMG_SIZE, interpolation=cv2.INTER_CUBIC)
         resized = resized[np.newaxis, :, :, np.newaxis]
-        predicted_slice[layer, :, :, :] = model.predict(resized) > threshold
+        predicted_slices[layer, :, :, :] = model.predict(resized) > threshold
 
-    return predicted_slice
+    return predicted_slices
 
 
-def write_contour(slice, predicted_slice, layer):
+def write_contour(slices, predicted_slices, layer):
     '''
     Draw the contours of the predicted mask over the original image.
 
     Parameters
     ----------
-    slice : numpy array
+    slices : numpy array
         Numpy array of shape = (layers, height, width, 1).
-    predicted_slice : numpy array
+    predicted_slices : numpy array
         array of shape = (layers, height, width, 1).
     layer : int
-        value between (0, slice.shape[0]).
+        value between (0, slices.shape[0]).
 
     Returns
     -------
     array
-        return an image with shape=(*slice.shape[1:3], 3).
+        return an image with shape=(*slices.shape[1:3], 3).
     '''
 
-    pred_mask = predicted_slice[layer, :, :, :]*255
+    pred_mask = predicted_slices[layer, :, :, :] * 255
     pred_mask = np.squeeze(pred_mask, axis=-1)
     pred_mask = pred_mask.astype('uint8')
 
     contours = cv2.findContours(
         pred_mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[0]
 
-    original = slice[layer, :, :, :]*255
+    original = slices[layer, :, :, :] * 255
     original = np.squeeze(original, axis=-1)
     original = original.astype('uint8')
 
@@ -334,28 +332,28 @@ def write_contour(slice, predicted_slice, layer):
     return ori
 
 
-def contour_slice(slice, predicted_slice):
+def contour_slices(slices, predicted_slices):
     '''
-    Draw the contours of the predicted mask over the original image for each layer of the slice.
+    Draw the contours of the predicted mask over the original image for each slice of the stack.
 
     Parameters
     ----------
-    slice : numpy array
+    slices : numpy array
         Numpy array of shape = (layers, height, width, 1).
-    predicted_slice : numoy array
+    predicted_slices : numpy array
         array of shape = (layers, height, width, 1).
 
     Returns
     -------
     array
-        return an array of shape = (*slice.shape, 3)
+        return an array of shape = (*slices.shape, 3)
     '''
 
-    contoured_slice = np.zeros(
-        shape=(*predicted_slice.shape[0:3], 3), dtype=np.uint8)
+    contoured_slices = np.zeros(
+        shape=(*predicted_slices.shape[0:3], 3), dtype=np.uint8)
 
-    for layer in range(predicted_slice.shape[0]):
-        cont = write_contour(slice, predicted_slice, layer)
-        contoured_slice[layer, ...] = cont
+    for layer in range(predicted_slices.shape[0]):
+        cont = write_contour(slices, predicted_slices, layer)
+        contoured_slices[layer, ...] = cont
 
-    return contoured_slice
+    return contoured_slices

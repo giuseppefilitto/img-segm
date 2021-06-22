@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
@@ -27,9 +28,9 @@ def display(display_list, colormap=False, cmap='gist_heat', norm=True):
     plt.figure(figsize=(12, 8))
     title = ['Input image', 'True Mask', 'Predicted mask']
     for i in range(len(display_list)):
-        plt.subplot(1, len(display_list), i+1)
+        plt.subplot(1, len(display_list), i + 1)
         plt.title(title[i])
-        if i == 2 and colormap == True:
+        if i == 2 and colormap:
             ax = plt.gca()
 
             if norm:
@@ -87,7 +88,7 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
     loss : string or a function
         string of name of a built-in function (i.e. 'binary_crossentropy' from tf.keras.metrics) or a custom function (see MRIsegm.losses).
     save : bool, optional
-        if saving the plot to the given path which must be given as path='path/to/plot', by default True. 
+        if saving the plot to the given path which must be given as path='path/to/plot', by default True.
     custom_metrics : bool, optional
         if metrics are all custom function (see MRIsegm.metrics) or not (i.e. 'accuracy' from tf.keras.metrics), by default True.
     custom_loss : bool, optional
@@ -111,11 +112,10 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
         plt.rc('ytick', labelsize=labelsize)
 
     for i in range(len(metrics)):
-        plt.subplot(1, len(metrics) + 1, i+1)
+        plt.subplot(1, len(metrics) + 1, i + 1)
         if custom_metrics:
             plt.plot(history.history['{}'.format(metrics[i].__name__)])
-            plt.plot(history.history['val_' +
-                                     '{}'.format(metrics[i].__name__)])
+            plt.plot(history.history['val_' + '{}'.format(metrics[i].__name__)])
             plt.title('model  {}'.format(metrics[i].__name__), fontsize=15)
             plt.xlabel('epoch', fontsize=15)
             plt.ylabel('{}'.format(metrics[i].__name__), fontsize=15)
@@ -179,3 +179,61 @@ def show_prediction(datagen, model, num=1, colormap=True, cmap='gist_heat', norm
         image, mask = next(datagen)
         pred_mask = model.predict(image)
         display([image[0], mask[0], pred_mask[0]], colormap, cmap, norm)
+
+
+def display_predictions(display_list, keys, colormap=True, cmap='gist_heat', figsize=(25, 15)):
+    plt.figure(figsize=figsize, constrained_layout=True)
+    title = ['True Mask'] + keys
+    for i in range(len(display_list)):
+        plt.subplot(1, len(display_list), i + 1)
+        plt.title(title[i])
+        if i >= 1 and colormap:
+            ax = plt.gca()
+            im = ax.imshow((display_list[i]), cmap=cmap, vmin=0.0, vmax=1.0)
+            if i == len(display_list) - 1:
+                axins = inset_axes(ax, width="5%", height="100%", loc='lower left', bbox_to_anchor=(1.02, 0., 1, 1), bbox_transform=ax.transAxes, borderpad=0)
+                plt.colorbar(im, cax=axins)
+        else:
+            plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]), cmap='gray')
+            # optional: tf.keras.preprocessing.image.array_to_img, just to rescale from 0.-1. to 0-255
+
+    plt.show()
+
+
+def show_multiple_predictions(datagen, keys, values, num=1, colormap=True, cmap='gist_heat', figsize=(25, 15)):
+    for i in range(0, num):
+        image, mask = next(datagen)
+        pred_masks = [model.predict(image) for model in values]
+        disp_list = [mask[0]] + [pred_masks[j][0] for j in range(len(pred_masks))]
+        display_predictions(disp_list, keys, colormap, cmap, figsize)
+        plt.show()
+
+
+def display_overlap(display_list, keys, colormap=True, cmap='gist_heat', figsize=(25, 15)):
+    plt.figure(figsize=figsize, constrained_layout=True)
+    title = ['True Mask'] + keys
+    for i in range(1, len(display_list)):
+        plt.subplot(1, len(display_list), i + 1)
+        plt.title(title[i - 1])
+        if i >= 2 and colormap:
+            ax = plt.gca()
+            im_0 = ax.imshow(display_list[0], cmap='gray', vmin=0.0, vmax=1.0)
+            display_list[i][display_list[i] <= 0.05] = np.nan
+            im = ax.imshow(display_list[i], cmap=cmap, vmin=0.0, vmax=1.0, alpha=0.75)
+            if i == len(display_list) - 1:
+
+                axins = inset_axes(ax, width="5%", height="100%", loc='lower left', bbox_to_anchor=(1.02, 0., 1, 1), bbox_transform=ax.transAxes, borderpad=0)
+                plt.colorbar(im, cax=axins)
+        else:
+            plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i] + display_list[0]), cmap='gray')
+            # optional: tf.keras.preprocessing.image.array_to_img, just to rescale from 0.-1. to 0-255
+    plt.show()
+
+
+def show_multiple_overlap(datagen, keys, values, num=1, colormap=True, cmap='gray', figsize=(25, 15)):
+    for i in range(0, num):
+        image, mask = next(datagen)
+        pred_masks = [model.predict(image) for model in values]
+        disp_list = [image[0]] + [mask[0]] + [pred_masks[j][0] for j in range(len(pred_masks))]
+        display_overlap(disp_list, keys, colormap, cmap, figsize)
+        plt.show()

@@ -56,10 +56,8 @@ def unet(IMAGE_HEIGHT, IMAGE_WIDTH, n_levels=4, initial_features=64, n_conv=2, k
     inputs = Input(shape=(IMAGE_HEIGHT, IMAGE_WIDTH, in_channels))
     x = inputs
 
-    convpars_down = dict(kernel_size=kernel_size, activation='relu',
-                         padding='same')
-    convpars_up = dict(kernel_size=kernel_size,
-                       activation='relu', padding='same')
+    convpars_down = dict(kernel_size=kernel_size, activation='relu', padding='same')
+    convpars_up = dict(kernel_size=kernel_size, activation='relu', padding='same')
 
     # downstream
     skips = {}
@@ -74,15 +72,13 @@ def unet(IMAGE_HEIGHT, IMAGE_WIDTH, n_levels=4, initial_features=64, n_conv=2, k
 
     # upstream
     for level in reversed(range(n_levels - 1)):
-        x = Conv2DTranspose(initial_features * 2 ** level,
-                            strides=pooling_size, **convpars_up)(x)
+        x = Conv2DTranspose(initial_features * 2 ** level, strides=pooling_size, **convpars_up)(x)
         x = Concatenate()([x, skips[level]])
         for _ in range(n_conv):
             x = Conv2D(initial_features * 2 ** level, **convpars_up)(x)
 
     # output
 
-    x = Conv2D(out_channels, kernel_size=1,
-               activation=activation, padding='same')(x)
+    x = Conv2D(out_channels, kernel_size=1, activation=activation, padding='same')(x)
 
     return tf.keras.Model(inputs=[inputs], outputs=[x], name=f'UNET-L{n_levels}-F{initial_features}')

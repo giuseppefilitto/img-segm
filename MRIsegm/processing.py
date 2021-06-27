@@ -223,7 +223,7 @@ def apply_mask(img, mask):
     return applied_mask
 
 
-def resize_slices(slices, IMAGE_HEIGHT, IMAGE_WIDTH):
+def resize_slices(slices, IMAGE_HEIGHT, IMAGE_WIDTH, dtype=np.float32):
     '''
 
     Resize slices to shape = (layers, height, width) to shape = (layers, height, width, 1).
@@ -236,26 +236,27 @@ def resize_slices(slices, IMAGE_HEIGHT, IMAGE_WIDTH):
         image height.
     IMAGE_WIDTH : int
         image width.
-
+    dtype : numpy dtype
+        dtype of the resized slices, by default np.float32.
     Returns
     -------
     resized_slice: numpy array
         resized array of shape (layers, height, width, 1) where 1 denotes the number of channels.
     '''
 
-    resized_slices = np.zeros(shape=(slices.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH, 1), dtype=np.float32)
+    resized_slices = np.zeros(shape=(slices.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH, 1), dtype=dtype)
 
     for layer in range(slices.shape[0]):
         IMG_SIZE = (IMAGE_HEIGHT, IMAGE_WIDTH)
         norm = slices[layer, :, :] * 1. / 255
-        resized = cv2.resize(norm.copy(), IMG_SIZE, interpolation=cv2.INTER_CUBIC)
+        resized = cv2.resize(norm.copy(), IMG_SIZE)
         resized = resized[np.newaxis, :, :, np.newaxis]
         resized_slices[layer, :, :, :] = resized
 
     return resized_slices
 
 
-def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold):
+def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold, dtype=np.float32):
     '''
     Create stack of predicted slice mask using the given model.
 
@@ -271,6 +272,8 @@ def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold):
         image width.
     threshold : float
         min threshold value.
+    dtype : numpy dtype
+        dtype of the resized slices, by default np.float32.
 
     Returns
     -------
@@ -279,13 +282,13 @@ def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold):
     '''
 
     predicted_slices = np.zeros(
-        shape=(slices.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH, 1), dtype=np.float32)
+        shape=(slices.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH, 1), dtype=dtype)
 
     for layer in range(slices.shape[0]):
 
         IMG_SIZE = (IMAGE_HEIGHT, IMAGE_WIDTH)
         norm = slices[layer, :, :] * 1. / 255
-        resized = cv2.resize(norm, IMG_SIZE, interpolation=cv2.INTER_CUBIC)
+        resized = cv2.resize(norm, IMG_SIZE)
         resized = resized[np.newaxis, :, :, np.newaxis]
         predicted_slices[layer, :, :, :] = model.predict(resized) > threshold
 

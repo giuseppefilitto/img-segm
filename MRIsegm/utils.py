@@ -242,9 +242,9 @@ def mask_slices(slices, rois):
     for layer in range(slices.shape[0]):
 
         if layer not in positions:
-            masked_slices[layer, :, :] = 0
+            masked_slices[layer, ...] = 0
         else:
-            masked_slices[layer, :, :] = make_mask(
+            masked_slices[layer, ...] = make_mask(
                 slices=slices, layer=layer, rois=rois)
 
     return masked_slices
@@ -271,7 +271,7 @@ def explore_roi(slices, layer, rois):
     if layer in positions:
 
         plt.figure(figsize=(12, 7), constrained_layout=True)
-        plt.imshow(slices[layer, :, :], cmap='gray')
+        plt.imshow(slices[layer, ...], cmap='gray')
         plt.title(f'Exploring Slice {layer}', fontsize=20)
         plt.axis('off')
 
@@ -285,10 +285,11 @@ def explore_roi(slices, layer, rois):
             plt.fill(x[i], y[i], edgecolor='r', fill=False)
 
     else:
-        plt.figure(figsize=(12, 7))
-        plt.imshow(slice[layer, :, :], cmap='gray')
+        plt.figure(figsize=(12, 7), constrained_layout=True)
+        plt.imshow(slices[layer, ...], cmap='gray')
         plt.title(f'Exploring Slice {layer}', fontsize=20)
         plt.axis('off')
+    plt.show()
 
 
 def plot_random_layer(slices):
@@ -310,7 +311,7 @@ def plot_random_layer(slices):
     explore_slices(slices=slices, layer=layer)
 
 
-def explore_slices(slices, layer):
+def explore_slices(slices, layer, **kwargs):
     '''
     Show figure of the given slice
 
@@ -321,10 +322,20 @@ def explore_slices(slices, layer):
     layer : int
         value between (0, slice.shape[0])
     '''
-    plt.figure(figsize=(12, 7), constrained_layout=True)
-    plt.imshow(slices[layer, :, :], cmap='gray')
-    plt.title(f'Exploring Slice {layer}', fontsize=20)
+    if kwargs.get('figsize'):
+        figsize = kwargs.get('figsize')
+        plt.figure(figsize=figsize, constrained_layout=True)
+        plt.imshow(slices[layer, ...], cmap='gray')
+    else:
+        plt.figure(figsize=(6, 6), constrained_layout=True)
+        plt.imshow(slices[layer, ...], cmap='gray')
+    if kwargs.get('fontsize'):
+        fontsize = kwargs.get('fontsize')
+        plt.title(f'Exploring Slice {layer}', fontsize=fontsize)
+    else:
+        plt.title(f'Exploring Slice {layer}', fontsize=15)
     plt.axis('off')
+    plt.show()
 
 
 def display_image(img, figsize=(12, 7), **kwargs):

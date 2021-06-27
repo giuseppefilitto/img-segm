@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from MRIsegm.utils import get_slices
 from MRIsegm.processing import denoise_slices, predict_slices, resize_slices, contour_slices
-from MRIsegm.losses import DiceBCEloss, soft_dice_loss
+from MRIsegm.losses import DiceBCEloss
 from MRIsegm.metrics import dice_coef
 
 from skimage.measure import marching_cubes
@@ -87,7 +87,7 @@ def parse_args():
     parser.add_argument('--dir', dest='dir', required=True, type=str,
                         action='store', help='DCM directory')
     parser.add_argument('--model', dest='model', required=False, type=str,
-                        action='store', help='segmentation model (set in default)', default='UNET-L7-F8_128_128_BATCHNORM_OPT=adam_LOSS=DiceBCEloss')
+                        action='store', help='segmentation model (set in default)', default='efficientnetb0_256_256_OPT=Adam_LOSS=DiceBCEloss')
     parser.add_argument('--mask', dest='mask', action='store_true',
                         help='plot predicted mask', default=False)
     parser.add_argument('--density', dest='density', action='store_true',
@@ -122,6 +122,7 @@ def main():
 
     slices = denoise_slices(slices, 5)
 
+    print("[denoising done.]")
     # model
     models_dir = 'data/models'
     model_path = os.path.join(models_dir, args.model + '.h5')
@@ -131,22 +132,22 @@ def main():
     dependencies = {
         'DiceBCEloss': DiceBCEloss,
         'dice_coef': dice_coef,
-        'soft_dice_loss': soft_dice_loss
+        'FixedDropout': tf.keras.layers.Dropout(0.2)
     }
 
     model = tf.keras.models.load_model(model_path, custom_objects=dependencies)
 
     # image specs
 
-    IMAGE_HEIGHT = 128
-    IMAGE_WIDTH = 128
+    IMAGE_HEIGHT = 256
+    IMAGE_WIDTH = 256
     IMG_SIZE = (IMAGE_HEIGHT, IMAGE_WIDTH)
 
     if slices.shape[1:3] != IMG_SIZE:
         print(f"[images rescaled {slices.shape[1:3]} --> {IMG_SIZE}]")
 
     predicted = predict_slices(
-        slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold=0.1)
+        slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold=0.5)
 
     resized = resize_slices(slices, IMAGE_HEIGHT, IMAGE_WIDTH)
     countured = contour_slices(resized, predicted)
@@ -162,7 +163,7 @@ def main():
 
         fig, ax = plt.subplots(1, 1)
 
-        tracker = IndexTracker(ax=ax, slice=predicted)
+        tracker = IndexTracker(ax=ax, slices=predicted)
 
         fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
         plt.show()
@@ -172,7 +173,7 @@ def main():
         fig, ax = plt.subplots(1, 1)
 
         tracker = DensityIndexTracker(
-            ax=ax, slice=resized, predictions=predicted.copy())
+            ax=ax, slices=resized, predictions=predicted.copy())
 
         fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
         plt.show()

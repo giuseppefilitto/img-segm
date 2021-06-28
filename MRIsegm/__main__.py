@@ -87,7 +87,7 @@ def parse_args():
     parser.add_argument('--dir', dest='dir', required=True, type=str,
                         action='store', help='DCM directory')
     parser.add_argument('--model', dest='model', required=False, type=str,
-                        action='store', help='segmentation model (set in default)', default='efficientnetb0_256_256_OPT=Adam_LOSS=DiceBCEloss')
+                        action='store', help='segmentation model (set in default)', default='efficientnetb0_256_256_BTC=8_alpha3_OPT=Adam_LOSS=DiceBCEloss')
     parser.add_argument('--mask', dest='mask', action='store_true',
                         help='plot predicted mask', default=False)
     parser.add_argument('--density', dest='density', action='store_true',
@@ -119,8 +119,8 @@ def main():
         slices = get_slices(dir_path)
 
     print("[denoising...]")
-
-    slices = denoise_slices(slices, 5)
+    alpha = 3
+    slices = denoise_slices(slices, alpha)
 
     print("[denoising done.]")
     # model

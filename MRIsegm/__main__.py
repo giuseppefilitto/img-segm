@@ -147,7 +147,7 @@ def main():
         print(f"[images rescaled {slices.shape[1:3]} --> {IMG_SIZE}]")
 
     predicted = predict_slices(
-        slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, threshold=0.5)
+        slices, model, IMAGE_HEIGHT, IMAGE_WIDTH)
 
     resized = resize_slices(slices, IMAGE_HEIGHT, IMAGE_WIDTH)
     countured = contour_slices(resized, predicted)

@@ -288,7 +288,7 @@ def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, dtype=np.float32):
         norm = slices[layer, :, :] * 1. / 255
         resized = cv2.resize(norm, IMG_SIZE)
         resized = resized[np.newaxis, :, :, np.newaxis]
-        predicted_slices[layer, :, :, :] = model.predict(resized)
+        predicted_slices[layer, :, :, :] = model.predict(resized) > 0.1  # to avoid prediction of bg
 
     return predicted_slices
 

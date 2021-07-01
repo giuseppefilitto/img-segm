@@ -12,7 +12,7 @@
 # Settings to use, possible settings are listed in the documentation (section "Customizing the extraction").
 setting:
   binWidth: 25
-  label: 255
+  label: 1
   interpolator: 'sitkBSpline' # This is an enumerated value, here None is not allowed
   resampledPixelSpacing: 
   weightingNorm: # If no value is specified, it is interpreted as None

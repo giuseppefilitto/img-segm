@@ -256,7 +256,7 @@ def resize_slices(slices, IMAGE_HEIGHT, IMAGE_WIDTH, dtype=np.float32):
     return resized_slices
 
 
-def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, dtype=np.float32):
+def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH):
     '''
     Create stack of predicted slice mask using the given model.
 
@@ -270,8 +270,6 @@ def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, dtype=np.float32):
         image height.
     IMAGE_WIDTH : int
         image width.
-    dtype : numpy dtype
-        dtype of the resized slices, by default np.float32.
 
     Returns
     -------
@@ -280,7 +278,7 @@ def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, dtype=np.float32):
     '''
 
     predicted_slices = np.zeros(
-        shape=(slices.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH, 1), dtype=dtype)
+        shape=(slices.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH, 1))
 
     for layer in range(slices.shape[0]):
 
@@ -288,7 +286,7 @@ def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH, dtype=np.float32):
         norm = slices[layer, :, :] * 1. / 255
         resized = cv2.resize(norm, IMG_SIZE)
         resized = resized[np.newaxis, :, :, np.newaxis]
-        predicted_slices[layer, :, :, :] = model.predict(resized) > 0.1  # to avoid prediction of bg
+        predicted_slices[layer, :, :, :] = model.predict(resized)[...]
 
     return predicted_slices
 

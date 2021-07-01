@@ -51,10 +51,10 @@ class DensityIndexTracker:
 
         self.background = ax.imshow(
             self.slices[self.index, ...], cmap='gray', vmin=0.0, vmax=1.0)
-        predictions[predictions <= 0.05] = np.nan
+        predictions[predictions <= 0.0005] = np.nan
 
         self.density = ax.imshow(
-            predictions[self.index, ...], cmap='magma', vmin=0.0, vmax=1.0, alpha=0.8)
+            predictions[self.index, ...], cmap='magma', vmin=0.0, vmax=1.0, alpha=0.7)
 
         cax = inset_axes(self.ax, width="5%", height="100%", loc='lower left',
                          bbox_to_anchor=(1.02, 0., 1, 1), bbox_transform=self.ax.transAxes,
@@ -190,7 +190,7 @@ def main():
         ax.set_ylim(np.min(verts[:, 1]), np.max(verts[:, 1]))
         ax.set_zlim(np.min(verts[:, 2]), np.max(verts[:, 2]))
 
-        mesh = Poly3DCollection(verts[faces], edgecolors='teal', facecolors='orange', alpha=0.9)
+        mesh = Poly3DCollection(verts[faces], edgecolors='teal', facecolors='orange', alpha=0.8)
         ax.add_collection3d(mesh)
         plt.tight_layout()
         plt.show()

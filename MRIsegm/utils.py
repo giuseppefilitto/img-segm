@@ -65,7 +65,7 @@ def read_slices(filename):
 def get_slices(dir_path):
     '''
 
-    Get full stack of slices from single dcm files ordered by "InstanceNumber" as a rescaled 3d array of shape: depth, height, width
+    Get full stack of slices from single dcm files ordered by "InstanceNumber" as a rescaled array of shape: depth, height, width
 
     Parameters
     ----------

@@ -293,12 +293,12 @@ def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH):
 
 def write_contour(slices, predicted_slices, layer):
     '''
-    Draw the contours of the predicted mask over the original image.
+    Draw the contours of the predicted mask over the original image. Slices must have the same IMG_SIZE of predicted_slices!
 
     Parameters
     ----------
     slices : numpy array
-        Numpy array of shape = (layers, height, width, 1).
+        Numpy array of shape (layers, height, width, 1).
     predicted_slices : numpy array
         array of shape = (layers, height, width, 1).
     layer : int
@@ -307,17 +307,17 @@ def write_contour(slices, predicted_slices, layer):
     Returns
     -------
     array
-        return an image with shape=(*slices.shape[1:3], 3).
+        return a RGB image array.
     '''
 
-    pred_mask = predicted_slices[layer, :, :, :] * 255
+    pred_mask = predicted_slices[layer, ...] * 255
     pred_mask = np.squeeze(pred_mask, axis=-1)
     pred_mask = pred_mask.astype('uint8')
 
     contours = cv2.findContours(
         pred_mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[0]
 
-    original = slices[layer, :, :, :] * 255
+    original = slices[layer, ...] * 255
     original = np.squeeze(original, axis=-1)
     original = original.astype('uint8')
 
@@ -334,6 +334,7 @@ def write_contour(slices, predicted_slices, layer):
 def contour_slices(slices, predicted_slices):
     '''
     Draw the contours of the predicted mask over the original image for each slice of the stack.
+    Slices must have the same IMG_SIZE of predicted_slices!
 
     Parameters
     ----------

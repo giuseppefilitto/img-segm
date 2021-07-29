@@ -31,27 +31,6 @@ def otsu_thresholding(img, **kwargs):
     return th
 
 
-def add_images(img1, img2):
-    '''
-    Add inputs images one over the other using cv2.add() function.
-
-    Parameters
-    ----------
-    img1 : image, array_like
-        first input image .
-    img2 : image, array_like
-        second input image.
-
-    Returns
-    -------
-    combo: image, array_like
-        return img1 + img2.
-    '''
-    combo = cv2.add(img1, img2)
-
-    return combo
-
-
 def show_image_histogram(img, show_original=True):
     '''
 
@@ -199,28 +178,6 @@ def compare_denoised_histo(img, alpha, figsize=(15, 15)):
     plt.hist(denoised_img.ravel(), 256, [0, 256], color="black")
     plt.title('Histogram', fontsize=15)
 
-
-def apply_mask(img, mask):
-    '''
-    Apply a mask to the image using bitwise_and from cv2.
-
-    Parameters
-    ----------
-    img : image, array_like
-        image to be masked.
-    mask : image, array_like
-        black and white image.
-
-    Returns
-    -------
-    applied_mask: image, array_like
-        image where each pixel is the same of the 'img' only if the corrisponding pixel of the mask is white.
-    '''
-
-    img = img.copy()
-    applied_mask = cv2.bitwise_and(img, mask, mask=mask)
-
-    return applied_mask
 
 
 def resize_slices(slices, IMAGE_HEIGHT, IMAGE_WIDTH, dtype=np.float32):

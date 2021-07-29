@@ -16,7 +16,7 @@ import glob
 import numpy as np
 import tensorflow as tf
 
-from random import choice
+import random
 
 __author__ = ['Giuseppe Filitto']
 __email__ = ['giuseppe.filitto@studio.unibo.it']
@@ -37,13 +37,13 @@ def get_predicted_strategy(draw):
     '''
     get a predicted stack of slices
     '''
-    dir = draw(st.just('test_dcm'))
+    dir = draw(st.just('testing/test_dcm'))
     slices = get_slices(dir)
 
-    src = '../data/models'
+    src = 'data/models'
 
     models_path = glob.glob(src + '/*.h5')
-    model_path = draw(st.just(choice(models_path)))
+    model_path = draw(st.just(random.choice(models_path)))
 
     dependencies = {
         'DiceBCEloss': DiceBCEloss,
@@ -65,10 +65,10 @@ def get_model_strategy(draw):
     Load a .h5 saved model
     '''
 
-    src = '../data/models'
+    src = 'data/models'
 
     models_path = glob.glob(src + '/*.h5')
-    model_path = draw(st.just(choice(models_path)))
+    model_path = draw(st.just(random.choice(models_path)))
 
     dependencies = {
         'DiceBCEloss': DiceBCEloss,
@@ -97,7 +97,7 @@ def get_slices_strategy(draw):
     '''
     Get sclices from test_dcm
     '''
-    path = draw(st.just('test_dcm'))
+    path = draw(st.just('testing/test_dcm'))
     slices = get_slices(path)
 
     return slices
@@ -185,9 +185,9 @@ def test_resize_slices(slices, IMG_SIZE, dtype):
 
 
 
-@given(get_slices_strategy(), get_model_strategy(), st.tuples(*[st.just(256)] * 2))
+@given(st.just('testing/test_dcm'), get_model_strategy(), st.tuples(*[st.just(256)] * 2))
 @settings(max_examples=10, deadline=None)
-def test_predict_slices(slices, model, IMG_SIZE):
+def test_predict_slices(path, model, IMG_SIZE):
     '''
     Given :
         - stack of slices
@@ -202,14 +202,14 @@ def test_predict_slices(slices, model, IMG_SIZE):
         - assert that the prediction is in the range [0, 1]
         - assert that the prediction of same models is the same
     '''
-
+    slices = get_slices(path)
     predicted = predict_slices(slices, model, *IMG_SIZE)
 
     predicted_1 = predict_slices(slices, model, *IMG_SIZE)
 
     assert predicted.shape[1:3] == IMG_SIZE
-    assert (0. <= predicted.all()) & (predicted.all() <= 1.)
-    assert np.allclose(predicted, predicted_1)
+    assert (predicted.all() >= 0.) & (predicted.all() <= 1.)
+    assert np.isclose(predicted, predicted_1).all()
 
 
 

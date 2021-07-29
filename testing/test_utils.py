@@ -21,7 +21,7 @@ __email__ = ['giuseppe.filitto@studio.unibo.it']
 ################################################################################
 
 
-@given(st.just('test_dcm'))
+@given(st.just('testing/test_dcm'))
 def test_get_slices(dir_path):
     '''
     Given :
@@ -48,7 +48,7 @@ def test_get_slices(dir_path):
     assert slices.dtype == np.uint8
 
 
-@given(st.just('test_ROIs'))
+@given(st.just('testing/test_ROIs'))
 def test_get_rois(rois_path):
     '''
     Given :
@@ -73,7 +73,7 @@ def test_get_rois(rois_path):
     assert positions == sorted(positions)
 
 
-@given(st.just('test_dcm'), st.just('test_ROIs'))
+@given(st.just('testing/test_dcm'), st.just('testing/test_ROIs'))
 def test_mask_slices(dir_path, rois_path):
     '''
     Given :

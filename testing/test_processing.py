@@ -1,5 +1,7 @@
 import hypothesis.strategies as st
-from hypothesis import given, settings
+from hypothesis import assume, given, settings
+
+from hypothesis import HealthCheck as HC
 
 from MRIsegm.utils import get_slices
 from MRIsegm.metrics import dice_coef
@@ -106,7 +108,7 @@ def rand_stack_strategy(draw):
     '''
     Generates a stack of N 512x512 white noise 8-bit images
     '''
-    N = draw(st.integers(10, 50))
+    N = draw(st.integers(5, 30))
     stack = (255 * np.random.rand(N, 512, 512)).astype(np.uint8)
     return stack
 
@@ -118,10 +120,9 @@ def rand_stack_strategy(draw):
 ################################################################################
 
 
-
-@given(rand_stack_strategy(), st.floats(2, 10))
-@settings(max_examples=15, deadline=None)
-def test_denoise_slices(slices, alpha):
+@given(rand_stack_strategy(), st.tuples(*[st.floats(2, 10)] * 2))
+@settings(max_examples=5, deadline=None, suppress_health_check=(HC.too_slow,))
+def test_denoise_slices(slices, alphas):
     '''
     Given :
         - stack of slices
@@ -132,41 +133,36 @@ def test_denoise_slices(slices, alpha):
 
     And :
         - assert that the snr is higher after denoising
-        - assert that increasing alpha the smoothness increase assuming more than one value for aplha
+        - assert that increasing alpha the smoothness increase assuming alphas[0] < alphas[1]
     '''
 
-    denoised = denoise_slices(slices, alpha)
+    assume(alphas[0] < alphas[1])
+
+    denoised_0 = denoise_slices(slices, alphas[0])
+    denoised_1 = denoise_slices(slices, alphas[1])
 
     m_noisy = slices.mean()
     sd_noisy = slices.std()
 
-    snr_noisy_dict = {}
-
     snr_noisy = np.where(sd_noisy == 0, 0, m_noisy / sd_noisy)
 
-    snr_noisy_dict[alpha] = snr_noisy
+    m_0 = denoised_0.mean()
+    sd_0 = denoised_0.std()
 
-    m = denoised.mean()
-    sd = denoised.std()
+    snr_0 = np.where(sd_0 == 0, 0, m_0 / sd_0)
 
-    snr_dict = {}
+    m_1 = denoised_1.mean()
+    sd_1 = denoised_1.std()
 
-    snr = np.where(sd == 0, 0, m / sd)
+    snr_1 = np.where(sd_1 == 0, 0, m_1 / sd_1)
 
-    snr_dict[alpha] = snr
-
-    alphas = []
-    alphas.append(alpha)
-
-
-
-    assert snr > snr_noisy
-    assert snr_dict[alphas[0]] < snr_dict[alphas[-1]] if len(alphas) > 1 else snr_dict[alphas[0]] <= snr_dict[alphas[-1]]
+    assert snr_0 > snr_noisy and snr_1 > snr_noisy
+    assert snr_0 < snr_1
 
 
 
 @given(rand_stack_strategy(), img_size_strategy(), st.sampled_from(legitimate_dtypes))
-@settings(max_examples=15, deadline=None)
+@settings(max_examples=10, deadline=None)
 def test_resize_slices(slices, IMG_SIZE, dtype):
     '''
     Given :
@@ -190,7 +186,7 @@ def test_resize_slices(slices, IMG_SIZE, dtype):
 
 
 @given(get_slices_strategy(), get_model_strategy(), st.tuples(*[st.just(256)] * 2))
-@settings(max_examples=15, deadline=None)
+@settings(max_examples=10, deadline=None)
 def test_predict_slices(slices, model, IMG_SIZE):
     '''
     Given :
@@ -213,12 +209,12 @@ def test_predict_slices(slices, model, IMG_SIZE):
 
     assert predicted.shape[1:3] == IMG_SIZE
     assert (0. <= predicted.all()) & (predicted.all() <= 1.)
-    assert np.isclose(predicted, predicted_1).all()
+    assert np.allclose(predicted, predicted_1)
 
 
 
 @given(get_slices_strategy(), get_predicted_strategy(), st.tuples(*[st.just(256)] * 2))
-@settings(max_examples=15, deadline=None)
+@settings(max_examples=10, deadline=None)
 def test_contour_slices(slices, predicted_slices, IMG_SIZE):
     '''
     Given :

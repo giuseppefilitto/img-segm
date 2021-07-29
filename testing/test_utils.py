@@ -80,11 +80,11 @@ def test_mask_slices(dir_path, rois_path):
         - .dcm dir_path
         - .roi dir_path
     So :
-        - make an array containing for each slice the proper mask: 0 (background) and 255 (label)
+        - make an array containing for each slice the proper mask: 0 (background) and 255 (ground-truth)
 
     And :
         - assert that the number of masked slices is equal to the number of found rois
-        - assert that the mask is made only by 0 (background) and 255 (label)
+        - assert that the mask is made only by 0 (background) and 255 (ground-truth)
         - assert that if no rois the mask is all black
 
     '''

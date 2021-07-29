@@ -1,0 +1,9 @@
+[run]
+branch = True
+omit =
+    */MRIsegm/__init__.py
+    */MRIsegm/__version__.py
+    */MRIsegm/__main__.py
+    */MRIsegm/datagenerators.py
+    */MRIsegm/models.py
+    */MRIsegm/graphics.py

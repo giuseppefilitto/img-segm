@@ -250,7 +250,7 @@ def mask_slices(slices, rois):
     return masked_slices
 
 
-def explore_roi(slices, layer, rois):
+def explore_roi(slices, layer, rois):  # pragma: no cover
     '''
       Show the regions of interest contours from a given slice
 
@@ -292,7 +292,7 @@ def explore_roi(slices, layer, rois):
     plt.show()
 
 
-def plot_random_layer(slices):
+def plot_random_layer(slices):  # pragma: no cover
     '''
 
     Show figure of the random slice between (0, slices.shape[0])
@@ -311,7 +311,7 @@ def plot_random_layer(slices):
     explore_slices(slices=slices, layer=layer)
 
 
-def explore_slices(slices, layer, **kwargs):
+def explore_slices(slices, layer, **kwargs):  # pragma: no cover
     '''
     Show figure of the given slice
 
@@ -338,7 +338,7 @@ def explore_slices(slices, layer, **kwargs):
     plt.show()
 
 
-def display_image(img, figsize=(12, 7), **kwargs):
+def display_image(img, figsize=(12, 7), **kwargs):  # pragma: no cover
     '''
     Display greyscale image
 
@@ -363,7 +363,7 @@ def display_image(img, figsize=(12, 7), **kwargs):
             plt.title(title)
 
 
-def display_images(display_list, figsize=(12, 8), **kwargs):
+def display_images(display_list, figsize=(12, 8), **kwargs):  # pragma: no cover
     '''
     Display a list of greyscale images
 

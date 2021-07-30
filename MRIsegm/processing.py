@@ -31,7 +31,7 @@ def otsu_thresholding(img, **kwargs):
     return th
 
 
-def show_image_histogram(img, show_original=True):
+def show_image_histogram(img, show_original=True):  # pragma: no cover
     '''
 
     Plot the histogram of the input image.
@@ -57,7 +57,7 @@ def show_image_histogram(img, show_original=True):
     plt.show()
 
 
-def show_slice_histogram(slices, layer, show_original=True):
+def show_slice_histogram(slices, layer, show_original=True):  # pragma: no cover
     '''
 
     Show the histogram of the given slices of the slices stack.
@@ -77,7 +77,7 @@ def show_slice_histogram(slices, layer, show_original=True):
     plt.suptitle(f'Layer : {layer}')
 
 
-def denoise_nlm(img, alpha, show=False, **kwargs):
+def denoise_nlm(img, alpha, show=False, **kwargs):  # pragma: no cover
     '''
 
     Denoise image using non-local mean filter.
@@ -147,7 +147,7 @@ def denoise_slices(slices, alpha=1.15):
     return denoised_slices
 
 
-def compare_denoised_histo(img, alpha, figsize=(15, 15)):
+def compare_denoised_histo(img, alpha, figsize=(15, 15)):  # pragma: no cover
     '''
     Compare the histogram of the original and denoised image showing both the image and the relative histogram.
 
@@ -248,7 +248,7 @@ def predict_slices(slices, model, IMAGE_HEIGHT, IMAGE_WIDTH):
     return predicted_slices
 
 
-def write_contour(slices, predicted_slices, layer):
+def write_contour(slices, predicted_slices, layer):  # pragma: no cover
     '''
     Draw the contours of the predicted mask over the original image. Slices must have the same IMG_SIZE of predicted_slices!
 

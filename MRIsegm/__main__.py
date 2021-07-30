@@ -160,10 +160,13 @@ def main():
     plt.show()
 
     if args.mask:
-
+        t = 0.01
+        pred = predicted.copy()
+        for i in range(pred.shape[0]):
+            pred[i, ...][pred[i, ...] > t] = 1
+            pred[i, ...][pred[i, ...] <= t] = 0
         fig, ax = plt.subplots(1, 1)
-
-        tracker = IndexTracker(ax=ax, slices=predicted)
+        tracker = IndexTracker(ax=ax, slices=pred)
 
         fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
         plt.show()

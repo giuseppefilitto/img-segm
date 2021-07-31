@@ -1,0 +1,25 @@
+language: python
+
+python:
+  - "3.9"
+
+before_install:
+  - pip install -r requirements.txt
+
+install:
+  - python setup.py install
+
+script:
+  - python -m pytest --cov=MRIsegm --cov-config=.coveragerc
+
+notifications:
+  email:
+
+    recipients:
+      - giuseppefilitto@gmail.com
+
+    on_success: never
+    on_failure: never
+
+after_succes:
+  - codecov

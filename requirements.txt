@@ -1,0 +1,14 @@
+numpy
+matplotlib
+opencv-python
+scikit-image
+read_roi
+pydicom
+tensorflow>=2.5.0
+
+
+# testing
+pytest
+hypothesis
+codecov
+pytest-cov

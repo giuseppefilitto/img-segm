@@ -1,5 +1,7 @@
 import hypothesis.strategies as st
-from hypothesis import given
+from hypothesis import given, settings
+
+from hypothesis import HealthCheck as HC
 
 from MRIsegm.utils import get_slices
 from MRIsegm.utils import get_rois
@@ -22,6 +24,7 @@ __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 
 @given(st.just('testing/test_dcm'))
+@settings(deadline=None, suppress_health_check=(HC.too_slow,))
 def test_get_slices(dir_path):
     '''
     Given :
@@ -49,6 +52,7 @@ def test_get_slices(dir_path):
 
 
 @given(st.just('testing/test_ROIs'))
+@settings(deadline=None, suppress_health_check=(HC.too_slow,))
 def test_get_rois(rois_path):
     '''
     Given :
@@ -74,6 +78,7 @@ def test_get_rois(rois_path):
 
 
 @given(st.just('testing/test_dcm'), st.just('testing/test_ROIs'))
+@settings(deadline=None, suppress_health_check=(HC.too_slow,))
 def test_mask_slices(dir_path, rois_path):
     '''
     Given :

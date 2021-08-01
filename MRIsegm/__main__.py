@@ -123,19 +123,46 @@ def main():
     slices = denoise_slices(slices, alpha)
 
     print("[denoising done.]")
+
+
     # model
     models_dir = 'data/models'
-    model_path = os.path.join(models_dir, args.model + '.h5')
 
-    print(f"[loading model --> {args.model}]")
+    try:
 
-    dependencies = {
-        'DiceBCEloss': DiceBCEloss,
-        'dice_coef': dice_coef,
-        'FixedDropout': tf.keras.layers.Dropout(0.2)
-    }
+        model_path = os.path.join(models_dir, args.model + '.h5')
 
-    model = tf.keras.models.load_model(model_path, custom_objects=dependencies)
+        print(f"[loading model --> {args.model}]")
+
+        dependencies = {
+            'DiceBCEloss': DiceBCEloss,
+            'dice_coef': dice_coef,
+            'FixedDropout': tf.keras.layers.Dropout(0.2)
+        }
+
+        model = tf.keras.models.load_model(model_path, custom_objects=dependencies)
+
+    except:
+
+        weights_dir = 'data/models/weights'
+        model_architecture = weights_dir + '/' + args.model + '.json'
+        model_weights = weights_dir + '/' + args.model + '_weights.h5'
+
+        import json
+        from tensorflow.keras.models import model_from_json
+
+        with open(model_architecture) as json_file:
+            data = json.load(json_file)
+
+        model = model_from_json(data)
+        model.load_weights(model_weights)
+
+        optimizer = 'Adam'
+        loss = DiceBCEloss
+        metrics = [dice_coef]
+
+        model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
+
 
     # image specs
 

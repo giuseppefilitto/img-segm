@@ -16,11 +16,13 @@ __author__ = ['Giuseppe Filitto']
 __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 
+
 ################################################################################
 ###                                                                          ###
 ###                              TESTING                                     ###
 ###                                                                          ###
 ################################################################################
+
 
 
 @given(st.just('testing/test_dcm'))
@@ -35,19 +37,19 @@ def test_get_slices(dir_path):
 
     And :
         - assert that the number of slices is equal to the number of dcm files
-        - assert that the slices are ordered by instace number
+        - assert that the slices have the same IMG_SIZE of the dcm files
         - assert that the slices are rescaled as uint8
 
     '''
-
-    n_files = len(glob.glob(dir_path + '/*.dcm'))
+    files = glob.glob(dir_path + '/*.dcm')
+    number_of_slices = len(files)
     slices = get_slices(dir_path)
 
-    maxval = slices.shape[0]
-    N = np.random.randint(0, maxval)
+    file = pydicom.read_file(files[0], force=True)
+    IMG_SIZE = (file.get("Rows"), file.get("Columns"))
 
-    assert slices.shape[0] == n_files
-    assert N == (pydicom.read_file(dir_path + '/{}'.format(N + 1) + '.dcm', force=True).get("InstanceNumber", 0) - 1)
+    assert slices.shape[0] == number_of_slices
+    assert slices.shape[1:3] == IMG_SIZE
     assert slices.dtype == np.uint8
 
 
@@ -101,8 +103,9 @@ def test_mask_slices(dir_path, rois_path):
     positions = [x - 1 for x in positions]
 
     masked = mask_slices(slices, rois)
-    no_mask = list(set(np.arange(0, masked.shape[0], 1)) - set(positions))
+
+    no_mask_index = list(set(np.arange(0, masked.shape[0], 1)) - set(positions))
 
     assert masked[positions].shape[0] == len(positions)
     assert set(np.unique(masked[positions])) == {0, 255}
-    assert set(np.unique(masked[no_mask])) == {0}
+    assert set(np.unique(masked[no_mask_index])) == {0}

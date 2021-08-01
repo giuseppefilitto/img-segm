@@ -15,6 +15,8 @@ from MRIsegm.processing import contour_slices
 import glob
 import numpy as np
 import tensorflow as tf
+import json
+from tensorflow.keras.models import model_from_json
 
 import random
 
@@ -40,18 +42,27 @@ def get_predicted_strategy(draw):
     dir = draw(st.just('testing/test_dcm'))
     slices = get_slices(dir)
 
-    src = 'data/models'
+    weights_dir = 'data/models/weights'
 
-    models_path = glob.glob(src + '/*.h5')
-    model_path = draw(st.just(random.choice(models_path)))
+    arch_list = glob.glob(weights_dir + '/*.json')
+    chosen_arch = draw(st.just(random.choice(arch_list)))
 
-    dependencies = {
-        'DiceBCEloss': DiceBCEloss,
-        'dice_coef': dice_coef,
-        'FixedDropout': tf.keras.layers.Dropout(0.2)
-    }
+    model_weights = chosen_arch.replace('.json', '_weights.h5')
 
-    model = tf.keras.models.load_model(model_path, custom_objects=dependencies)
+
+    with open(chosen_arch) as json_file:
+        data = json.load(json_file)
+
+    model = model_from_json(data)
+    model.load_weights(model_weights)
+
+    optimizer = 'Adam'
+    loss = DiceBCEloss
+    metrics = [dice_coef]
+
+    model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
+
+
     IMG_SIZE = draw(st.tuples(*[st.just(256)] * 2))
 
     predicted = predict_slices(slices, model, *IMG_SIZE)
@@ -62,21 +73,28 @@ def get_predicted_strategy(draw):
 @st.composite
 def get_model_strategy(draw):
     '''
-    Load a .h5 saved model
+    Load a model from saved weights
     '''
 
-    src = 'data/models'
+    weights_dir = 'data/models/weights'
 
-    models_path = glob.glob(src + '/*.h5')
-    model_path = draw(st.just(random.choice(models_path)))
+    arch_list = glob.glob(weights_dir + '/*.json')
+    chosen_arch = draw(st.just(random.choice(arch_list)))
 
-    dependencies = {
-        'DiceBCEloss': DiceBCEloss,
-        'dice_coef': dice_coef,
-        'FixedDropout': tf.keras.layers.Dropout(0.2)
-    }
+    model_weights = chosen_arch.replace('.json', '_weights.h5')
 
-    model = tf.keras.models.load_model(model_path, custom_objects=dependencies)
+
+    with open(chosen_arch) as json_file:
+        data = json.load(json_file)
+
+    model = model_from_json(data)
+    model.load_weights(model_weights)
+
+    optimizer = 'Adam'
+    loss = DiceBCEloss
+    metrics = [dice_coef]
+
+    model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 
     return model
 
@@ -121,7 +139,7 @@ def rand_stack_strategy(draw):
 
 
 @given(rand_stack_strategy(), st.tuples(*[st.floats(2, 10)] * 2))
-@settings(max_examples=5, deadline=None, suppress_health_check=(HC.too_slow,))
+@settings(max_examples=4, deadline=None, suppress_health_check=(HC.too_slow,))
 def test_denoise_slices(slices, alphas):
     '''
     Given :
@@ -228,11 +246,16 @@ def test_contour_slices(slices, predicted_slices, IMG_SIZE):
         - assert that the number of contoured slices is the same of the original slices
         - assert that the output stack has the right number of slices and IMG_SIZE
         - assert that the images are stored as RGB
+        - assert that the contour is red
     '''
 
     resized = resize_slices(slices, *IMG_SIZE)
     contoured = contour_slices(resized, predicted_slices)
 
+    blu_ch = contoured[..., 0]
+    green_ch = contoured[..., 1]
+
     assert contoured.shape[0] == predicted_slices.shape[0] == slices.shape[0]
     assert contoured.shape[0:3] == predicted_slices.shape[0:3]
     assert contoured.shape[-1] == 3
+    assert blu_ch.all() == green_ch.all() == 0

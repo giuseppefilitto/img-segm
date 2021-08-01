@@ -134,8 +134,10 @@ dmypy.json
 
 #data 
 data/*
-**/storage
-
-#except
 !data/models
+
+data/models/*
+!data/models/weights
+
+**/storage
 !plots

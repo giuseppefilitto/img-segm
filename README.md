@@ -1,6 +1,6 @@
 | **Author**  | **Project** |  **Build Status** | **License** | **Code Quality** | **Coverage** |
 |:------------:|:-----------:|:-----------------:|:-----------:|:----------------:|:------------:|
-| [**G. Filitto**](https://github.com/giuseppefilitto) | **MRI colorectal cancer segmentation** | **Linux** : ![linux](https://img.shields.io/travis/giuseppefilitto/img-segm) | ![license](https://img.shields.io/github/license/giuseppefilitto/img-segm?)| **Codacy** : [![Codacy Badge]()]() <br/> **Codebeat** : [![CODEBEAT]()]() | [![codecov](https://codecov.io/gh/giuseppefilitto/img-segm/branch/main/graph/badge.svg?token=2POF72SN06)](https://codecov.io/gh/giuseppefilitto/img-segm) |
+| [**G. Filitto**](https://github.com/giuseppefilitto) | **MRI colorectal cancer segmentation** | **Linux** : ![linux](https://img.shields.io/travis/giuseppefilitto/img-segm) | ![license](https://img.shields.io/github/license/giuseppefilitto/img-segm)| **Codacy** : [![Codacy Badge]()]() <br/> **Codebeat** : [![CODEBEAT]()]() | [![codecov](https://codecov.io/gh/giuseppefilitto/img-segm/branch/main/graph/badge.svg?token=2POF72SN06)](https://codecov.io/gh/giuseppefilitto/img-segm) |
 
 
 

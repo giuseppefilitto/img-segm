@@ -9,14 +9,14 @@ __email__ = ['giuseppe.filitto@studio.unibo.it']
 def create_segmentation_generator(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEED, data_gen_args_img, data_gen_args_mask):
     '''
 
-    Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask. The data generation is performed using data_gen_args_img and data_gen_args_mask.
+    Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the ground-truth. The data generation is performed using data_gen_args_img and data_gen_args_mask.
 
     Parameters
     ----------
     img_path : str
         path for the images directory.
     mask_path : str
-        path for the masks directory.
+        path for the ground-truth directory.
     BATCH_SIZE : int
         size of the batches of data.
     IMG_SIZE : tuple
@@ -24,13 +24,13 @@ def create_segmentation_generator(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEE
     SEED : int
         seed for randomness control.
     data_gen_args_img: dict
-        dict of keras ImageDataGenerator args for the generation of custom images
+        dict of keras ImageDataGenerator args for the generation of custom images.
     data_gen_args_mask: dict
-        dict of keras ImageDataGenerator args for the generation of custom masks
+        dict of keras ImageDataGenerator args for the generation of custom masks.
     Returns
     -------
-    tuples
-        tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the true mask.
+    zip object
+        tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the ground-truth.
 
     '''
 

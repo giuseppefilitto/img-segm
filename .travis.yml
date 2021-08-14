@@ -35,23 +35,8 @@ matrix:
       env:
         - MATRIX_EVAL=""
 
-    - os: osx
-      python: generic
-      name: osx 
-      env:
-        - MATRIX_EVAL=""
-
-    - os: windows
-      python: generic
-      name: windows 
-      env:
-        - MATRIX_EVAL=""
-
-
 before_install:
   - travis_retry eval "${MATRIX_EVAL}"
-  - if [ $TRAVIS_OS_NAME = 'osx' ]; then brew install python@3.9; fi
-  - if [ $TRAVIS_OS_NAME = 'windows' ]; then choco install python --version=3.9; fi
   - python -m pip install --upgrade pip
   - python -m pip --version
   - pip install -r requirements.txt

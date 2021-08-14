@@ -3,7 +3,7 @@ language: python
 matrix:
   include:
 
-      - os: windows
+    - os: windows
       python: 3.9
       name: windows - python@3.9
       env:
@@ -15,7 +15,6 @@ matrix:
       env:
         - MATRIX_EVAL=""
     
-
     - os: linux
       python: 3.9
       name: ubuntu 16.04 - python@3.9

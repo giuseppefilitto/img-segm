@@ -47,7 +47,7 @@ install:
   - python setup.py install
 
 script:
-  - travis_wait 45 python -m pytest --cov=MRIsegm --cov-config=.coveragerc
+  - python -m pytest --cov=MRIsegm --cov-config=.coveragerc
 
 notifications:
   email:

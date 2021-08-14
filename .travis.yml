@@ -36,13 +36,13 @@ matrix:
         - MATRIX_EVAL=""
 
     - os: osx
-      python: 3.9
+      python: generic
       name: osx 
       env:
         - MATRIX_EVAL=""
 
     - os: windows
-      python: 3.9
+      python: generic
       name: windows 
       env:
         - MATRIX_EVAL=""

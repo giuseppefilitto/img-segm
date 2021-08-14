@@ -3,18 +3,30 @@ language: python
 matrix:
   include:
 
-    - os: windows
-      python: 3.9
-      name: windows - python@3.9
+    - os: linux
+      python: 3.6
+      name: ubuntu 16.04 - python@3.6
+      dist: xenial
+      sudo: true
       env:
         - MATRIX_EVAL=""
 
-    - os: osx
-      python: 3.9
-      name: osx - python@3.9
+    - os: linux
+      python: 3.7
+      name: ubuntu 16.04 - python@3.7
+      dist: xenial
+      sudo: true
       env:
         - MATRIX_EVAL=""
-    
+
+    - os: linux
+      python: 3.8
+      name: ubuntu 16.04 - python@3.8
+      dist: xenial
+      sudo: true
+      env:
+        - MATRIX_EVAL=""
+
     - os: linux
       python: 3.9
       name: ubuntu 16.04 - python@3.9
@@ -26,15 +38,16 @@ matrix:
 
 before_install:
   - travis_retry eval "${MATRIX_EVAL}"
-  - python3 -m pip install --upgrade pip
-  - python3 -m pip --version
-  - pip3 install -r requirements.txt
+  - python -m pip install --upgrade pip
+  - python -m pip --version
+  - pip install -r requirements.txt
+
 
 install:
-  - python3 setup.py install
+  - python setup.py install
 
 script:
-  - travis_wait 45 python3 -m pytest --cov=MRIsegm --cov-config=.coveragerc
+  - travis_wait 45 python -m pytest --cov=MRIsegm --cov-config=.coveragerc
 
 notifications:
   email:

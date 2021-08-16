@@ -15,10 +15,13 @@ The segmentation approach is based on Convolutional Neural Networks (CNNs) like 
 This package provides a series of modules to visualize, pre-process the DICOM files and to train a U-Net model.
 
 1. [Overview](#Overview)
-2. [Installation](#Installation)
-3. [Usage](#Usage)
-4. [Authors](#Authors)
-5. [Citation](#Citation)
+2. [Contents](#Contents)
+3. [Prerequisites](#Prerequisites)
+4. [Installation](#Installation)
+5. [Usage](#Usage)
+6. [License](#License)
+7. [Author](#Author)
+8. [Citation](#Citation)
 
 
 ## Overview
@@ -38,6 +41,51 @@ This project provides an automatic pipeline for the segmentation of
 cancer areas on T2-weighted Magnetic Resonance Images of patient affected by colorectal cancer.
 The segmentation is achieved with a Convolutional Neural Network like U-Net.
 
+## Contents
+
+img-segm is composed of a series of modules contained in [MRIsegm](https://github.com/giuseppefilitto/img-segm/tree/main/MRIsegm) and scripts in [utils](https://github.com/giuseppefilitto/img-segm/tree/main/utils):
+- modules allows to load, visualize, processing the DICOM series and to train a [U-Net](https://github.com/giuseppefilitto/img-segm/blob/main/extras/U-Net%20arch.jpeg) model. 
+- scripts provide a fast way to handle DICOM series and ROI from command line.
+
+For a better description of each module:
+
+| **Module**| **Description**|
+|:---------:|:--------------:|
+| utils | methods to load and visualize the DICOM series and the relative Region Of Interest (ROI)|
+| processing | methods to perform operations such as denoising, resizing, predict the images |
+| models | contains the implementation of a U-net model|
+| datagenerators | contains a  method to generate data for for training the model |
+| metrics | contains useful metrics for training the model |
+|losses | 	contains useful losses for training the model |
+|graphics| methods to display the predictions |
+
+_notes_:
+
+* It is also possible to use models, metrics and losses from the [segmentation-models](https://github.com/qubvel/segmentation_models) library.
+
+
+For a better description of each script:
+
+| **Script** | **Description** |
+|:----------:|:---------------:|
+| dcmsorter | move and sort DICOM files from nested dirs like ```patientID/EXAMINATION/DIRECTORY1/DIRECTORY2``` to ```patientID/EXAMINATION```					 																																				|
+| dcm2img| convert DICOM series to .png images																																												|
+| roimanager | show the ROI saved as .roi over the images|
+
+
+For the usage of each script please refer to the [documentation](https://github.com/giuseppefilitto/img-segm/tree/main/utils).
+## Pre-requisites
+
+Supported python: ![Python version](https://img.shields.io/badge/python--version-v3.6|3.7|3.8|3.9-blue.svg)
+
+First of all ensure to have the right python version installed.
+
+This project use Tensorflow, opencv-python, numpy: see the
+[requirements](https://github.com/giuseppefilitto/img-segm/blob/main/requirements.txt) for more information.
+
+> :warning: Tensorflow v2.5 requires the minimum Python version to be  3.6!
+
+
 ## Installation
 First, clone the git repository and change directory:
 
@@ -49,6 +97,9 @@ cd img-segm
 Then, pip-install the requirements and run the setup script:
 ```bash
 pip install -r requirements.txt
+```
+> :warning: Apple Silicon: ensure to have installed a proper [Conda env](https://github.com/conda-forge/miniforge), then install tensorflow as explained [here](https://developer.apple.com/metal/tensorflow-plugin/). Finally, install one by one the remaining dependencies using conda (if available) or pip.
+```bash
 python setup.py install
 ```
 ### Testing
@@ -72,32 +123,76 @@ If the directory is a subfolder of more than one directory, the script will find
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  
 ```
+
+_where_:
+* ```--dir ``` is the path of the directory containing the DICOM series (required).
 ### Options
 
-#### mask
+#### ```--model``` 
+ Name of the model's weights saved in the [``` weights```](https://github.com/giuseppefilitto/img-segm/tree/main/data/models/weights) dir.
+
+ ```bash
+   python -m MRIsegm --dir='/path/to/input/series/' --model='model_name'
+```
+
+ _notes_:
+ * ``` model_name``` set as default:```efficientnetb0_256_256_BTC=8_alpha3_OPT=Adam_LOSS=DiceBCEloss```
+ * Remember to specify the name without```_weights.h5```
+ * you can also use your own model's weight saving the weights in the [``` weights```](https://github.com/giuseppefilitto/img-segm/tree/main/data/models/weights) dir as ``` model_name_weights.h5```. 
+>:warning: You need to save also the architecture  as ``` model_name.json``` file in the same dir.
+
+#### ```--mask``` 
 
 When enabled plot the segmented mask, between 0 and 1, of each slice
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --mask
 ```
-#### density
+#### ``` --density``` 
 
 When enabled plot the the probability map between 0 and 1 of each slice over the original image
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --density
 ```
 
-#### 3D mesh plot
+#### ``` --3D```  
 
 When enabled plot the a 3D mesh plot of the segmented areas
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --3D
 ```
-### Pipeline
+### Examples
 
-The workflow of this project is available under the [notebooks](https://github.com/giuseppefilitto/img-segm/blob/master/notebooks) folder.
+Several examples are available under the [notebooks](https://github.com/giuseppefilitto/img-segm/blob/master/notebooks) dir.
+
+For each purpose:
+
+| **Purpose** | **Example** |
+|:----------:|:---------------:|
+| load, visualize DICOM series  |  [DicomExplorer](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/DicomExplorer.ipynb)   |
+| perform Image processing operation  |  [ImageProcessing](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/ImageProcessing.ipynb)  |
+|   Pre-process the images for model's training |   [Pre-processing](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Pre-processing.ipynb)  |
+|  train a U-net model |    [UNet-Segmentation](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/UNet-Segmentation.ipynb) |
+|       train a model from [segmentation-models](https://github.com/qubvel/segmentation_models)|  [SM-Segmentation](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/SM-Segmentation.ipynb)   |
+|    Display the predictions  |      [Predictions](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Predictions.ipynb)   |
+|    Save the predicted image   |     [Store_Predictions](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Store_predictions.ipynb)     |
+|   Convert model to model's weights   |      [ConverterToWeights](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/ConverterToWeights.ipynb) |
+| plot 3D mesh| [3D-mesh](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/3D-mesh.ipynb)  | 
 
 
+__extras (features extraction)__:
+> :warning: Require [SimpleITK](https://simpleitk.readthedocs.io/en/master/gettingStarted.html#python-binary-files) and [pyradiomics](https://pyradiomics.readthedocs.io/en/latest/installation.html). Please ensure to have them installed.
+
+
+| **Purpose** | **Example** |
+|:----------:|:---------------:|
+|  Feature Extraction   |    [FeaturesExtraction](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/FeaturesExtraction.ipynb) |
+|   Features Clustering      |  [Features Clustering](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/FeaturesClustering.ipynb) |
+|   Write .dcm files   |    [Writedicom](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Writedicom.ipynb)   |
+|    Write .nrrd files     |   [sitkvolumeR](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/sitkvolumeR.ipynb)   |
+## License
+
+This package is licensed under the MIT "Expat" License.
+![License](https://img.shields.io/github/license/giuseppefilitto/img-segm)
 
 
 ## Author

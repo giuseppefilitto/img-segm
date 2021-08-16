@@ -1,0 +1,9 @@
+exclude_paths:
+  - '.github/**'
+  - '**.md'
+  - 'extras/**'
+  - MRIsegm/__init__.py
+  - MRIsegm/__version__.py
+  - testing/**
+  - .travis.ylm
+  - 'notebooks/**'

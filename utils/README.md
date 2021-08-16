@@ -71,8 +71,6 @@ python -m roimanager --src 'path/to/source' --patient 'patientID' --weight 'T2' 
 _where_:
 * ```--src``` is the path of the database or where the nested dirs ```patientID/EXAMINATION/FOLDER1/FOLDER2``` containing the DICOM series are located 
 
-*  ```--dst``` is the path where the sorted DICOM files in ```patientID/EXAMINATION``` will be saved
-
 * ```--patient``` is the ```patientID``` of the database
 
 * ```--weight``` is the kind of examination performed (```T2``` or  ```DWI```)

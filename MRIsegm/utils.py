@@ -10,17 +10,18 @@ __author__ = ['Giuseppe Filitto']
 __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 
-def rescale(im, max, min):
+def rescale(im, max_value, min_value):
     '''
+
     Rescale image in range (0,255)
 
     Parameters
     ----------
     im : array like
         image to be rescaled
-    max : value
+    max_value : value
         max image value
-    min : value
+    min_value : value
         min image value
 
     Returns
@@ -28,7 +29,7 @@ def rescale(im, max, min):
     rescaled image: array like
         rescaled input image as type uint 8
     '''
-    rescaled_image = ((im.astype(float) - min) * (1. / (max - min)) * 255.).astype('uint8')
+    rescaled_image = ((im.astype(float) - min_value) * (1. / (max_value - min_value)) * 255.).astype('uint8')
     return rescaled_image
 
 
@@ -277,10 +278,10 @@ def explore_roi(slices, layer, rois):  # pragma: no cover
 
         roi = list(filter(lambda d: d['position'] == layer + 1, rois))
 
-        x = [roi[i].get('x') for i in range(len(roi))]
-        y = [roi[i].get('y') for i in range(len(roi))]
+        x = [roi[i].get('x') for i, _ in enumerate(roi)]
+        y = [roi[i].get('y') for i, _ in enumerate(roi)]
 
-        for i in range(len(x)):
+        for i, _ in enumerate(roi):
 
             plt.fill(x[i], y[i], edgecolor='r', fill=False)
 
@@ -377,7 +378,7 @@ def display_images(display_list, figsize=(12, 8), **kwargs):  # pragma: no cover
 
     plt.figure(figsize=figsize)
 
-    for i in range(len(display_list)):
+    for i, _ in enumerate(display_list):
         plt.subplot(1, len(display_list), i + 1)
         plt.imshow(display_list[i], cmap='gray')
         if kwargs.get('titles'):

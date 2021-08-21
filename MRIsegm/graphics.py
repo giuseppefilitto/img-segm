@@ -27,7 +27,7 @@ def display(display_list, colormap=False, cmap='gist_heat', norm=True):
     plt.style.use('default')
     plt.figure(figsize=(12, 8))
     title = ['Input image', 'Ground-truth', 'Predicted']
-    for i in range(len(display_list)):
+    for i, _ in enumerate(display_list):
         plt.subplot(1, len(display_list), i + 1)
         plt.title(title[i])
         if i == 2 and colormap:
@@ -68,7 +68,7 @@ def show_dataset(datagen, num=1):
 
     '''
     plt.style.use('default')
-    for i in range(0, num):
+    for _ in range(0, num):
         image, mask = next(datagen)
         display([image[0], mask[0]])
 
@@ -112,7 +112,7 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
         plt.rc('xtick', labelsize=labelsize)
         plt.rc('ytick', labelsize=labelsize)
 
-    for i in range(len(metrics)):
+    for i, _ in enumerate(metrics):
         plt.subplot(1, len(metrics) + 1, i + 1)
         if custom_metrics:
             plt.plot(history.history['{}'.format(metrics[i].__name__)])
@@ -176,7 +176,7 @@ def show_prediction(datagen, model, num=1, colormap=True, cmap='gist_heat', norm
 
     '''
     plt.style.use('default')
-    for i in range(0, num):
+    for _ in range(0, num):
         image, mask = next(datagen)
         pred_mask = model.predict(image)
         display([image[0], mask[0], pred_mask[0]], colormap, cmap, norm)
@@ -240,7 +240,7 @@ def show_multiple_predictions(datagen, keys, values, num=1, colormap=True, cmap=
     figsize : tuple, optional
         figure size, by default (25, 15).
     '''
-    for i in range(0, num):
+    for _ in range(0, num):
         image, mask = next(datagen)
         pred_masks = [model.predict(image) for model in values]
         disp_list = [mask[0]] + [pred_masks[j][0] for j in range(len(pred_masks))]

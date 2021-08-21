@@ -1,6 +1,5 @@
 import os
 import pydicom
-import numpy as np
 from PIL import Image  # PILLOW package
 from tqdm import trange
 import argparse
@@ -23,22 +22,22 @@ def parse_args():
     return args
 
 
-def rescale(img, max, min):
+def rescale(img, max_value, min_value):
     '''
     Parameters
     ----------
     img :
         pixel_array image.
-    max :
+    max_value :
         pixel_array image max value.
-    min :
+    min_value :
         pixel_array image min value.
 
     Returns
     -------
         rescaled pixel_array image as uint8 type.
     '''
-    return ((img.astype(float) - min) * (1. / (max - min)) * 255.).astype('uint8')
+    return ((img.astype(float) - min_value) * (1. / (max_value - min_value)) * 255.).astype('uint8')
 
 
 def read_dcm(filename):
@@ -72,8 +71,6 @@ def converter(src, dst):
      converted .png images
     '''
 
-    src_path, dir_name = os.path.split(src)
-
     if not os.path.exists(src):
         raise ValueError("Path not found")
 
@@ -82,7 +79,7 @@ def converter(src, dst):
         os.makedirs(dst)
 
     dcm_list = []
-    for root, dirs, files in os.walk(src):
+    for root, _, files in os.walk(src):
         for file in files:
             if ".dcm" in file:
                 dcm_list.append(os.path.join(root, file))
@@ -128,23 +125,23 @@ def main():
             progress_bar = trange(len(dirs), desc="Convertion in progress")
 
             for item in dirs:
-                input = os.path.join(args.src, item)
+                input_ = os.path.join(args.src, item)
 
-                list = []
-                for root, dirs, files in os.walk(input):
+                list_ = []
+                for root, dirs, files in os.walk(input_):
                     for file in files:
                         if ".dcm" in file:
-                            list.append(os.path.join(root, file))
+                            list_.append(os.path.join(root, file))
 
-                src_dir = [os.path.split(i)[0] for i in list]
+                src_dir = [os.path.split(i)[0] for i in list_]
                 src_dir = set(src_dir)  # to get unique values
 
-                for dir in src_dir:
+                for dir_ in src_dir:
 
                     output = os.path.join(
-                        args.dst, item, os.path.split(dir)[1])
+                        args.dst, item, os.path.split(dir_)[1])
 
-                    converter(dir, output)
+                    converter(dir_, output)
 
                 progress_bar.update(1)
 
@@ -152,11 +149,11 @@ def main():
 
         else:
 
-            input = os.path.join(args.src, args.patient)
+            input_ = os.path.join(args.src, args.patient)
             output = os.path.join(args.dst, args.patient)
 
             list = []
-            for root, dirs, files in os.walk(input):
+            for root, dirs, files in os.walk(input_):
                 for file in files:
                     if ".dcm" in file:
                         list.append(os.path.join(root, file))

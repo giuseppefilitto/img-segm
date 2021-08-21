@@ -24,11 +24,7 @@ def parse_args():
 
 
 def _dict(dict_list):
-    '''
-
-    useful to get true_dict since roi is {name file : true_dict}.
-
-    '''
+    '''useful to get true_dict since roi is {name file : true_dict}.'''
 
     true_dict = []
 

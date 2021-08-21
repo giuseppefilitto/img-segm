@@ -16,6 +16,17 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 class IndexTracker:
     def __init__(self, ax, slices):
+        '''
+
+        Index Tracker class for plotting using scroll wheel
+
+        Parameters
+        ----------
+        ax : Axes object
+            matplotlib axes
+        slices : array
+            stack of slices
+        '''
         self.ax = ax
         ax.set_xlabel('use scroll wheel to navigate layers')
         self.slices = slices
@@ -42,6 +53,19 @@ class IndexTracker:
 
 class DensityIndexTracker:
     def __init__(self, ax, slices, predictions):
+        '''
+
+        Index Tracker class for plotting images and the overlapping predictions using scroll wheel
+
+        Parameters
+        ----------
+        ax : Axes object
+            matplotlib axes
+        slices : array
+            stack of slices
+        predictions : array
+            stack of corresponding predicted slices
+        '''
         self.ax = ax
         ax.set_xlabel('use scroll wheel to navigate slices')
 
@@ -179,12 +203,7 @@ def main():
     resized = resize_slices(slices, IMAGE_HEIGHT, IMAGE_WIDTH)
     countured = contour_slices(resized, predicted)
 
-    fig, ax = plt.subplots(1, 1)
 
-    tracker = IndexTracker(ax=ax, slices=countured)
-
-    fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
-    plt.show()
 
     if args.mask:
         t = 0.01
@@ -197,6 +216,7 @@ def main():
 
         fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
         plt.show()
+        exit(1)
 
     if args.density:
 
@@ -207,6 +227,7 @@ def main():
 
         fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
         plt.show()
+        exit(1)
 
     if args.mesh3D:
 
@@ -224,6 +245,14 @@ def main():
         ax.add_collection3d(mesh)
         plt.tight_layout()
         plt.show()
+        exit(1)
+
+    fig, ax = plt.subplots(1, 1)
+
+    tracker = IndexTracker(ax=ax, slices=countured)
+
+    fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
+    plt.show()
 
 
 if __name__ == '__main__':

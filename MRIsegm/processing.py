@@ -104,7 +104,7 @@ def denoise_nlm(img, alpha, show=False, **kwargs):  # pragma: no cover
 
     if show:
         figsize = kwargs.get('figsize')
-        fig, ax = plt.subplots(1, 2, figsize=(
+        ax = plt.subplots(1, 2, figsize=(
             figsize), constrained_layout=True)
 
         ax[0].imshow(img, cmap="gray")

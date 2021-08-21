@@ -27,6 +27,8 @@ def parse_args():
 def sorter(input_path, output_path, patient):
     '''
 
+    Sort by "InstanceNumber" dcm files in input_path dirs like ```patientID/EXAMINATION/DIRECTORY1/DIRECTORY2``` to ```patientID/EXAMINATION``` and save them into output_path
+
     Parameters
     ----------
     input_path : str
@@ -48,7 +50,7 @@ def sorter(input_path, output_path, patient):
         os.makedirs(output_path)
 
     unsortedList = []
-    for root, dirs, files in os.walk(input_path):
+    for root, _, files in os.walk(input_path):
         for file in files:
             if ".dcm" in file:
                 unsortedList.append(os.path.join(root, file))

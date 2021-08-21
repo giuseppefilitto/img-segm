@@ -4,7 +4,7 @@ from setuptools import find_packages
 
 setup(
     name="img-segm",
-    version="0.0.1",
+    version="1.0.0",
 
     author="giuseppefilitto",
     author_email="giuseppefilitto@gmail.com",
@@ -13,6 +13,6 @@ setup(
 
     packages=find_packages(),
 
-    python_requires=">=3.9"
+    python_requires=">=3.6"
 
 )

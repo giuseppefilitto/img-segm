@@ -42,7 +42,7 @@ cancer areas on T2-weighted Magnetic Resonance Images of patient affected by col
 The segmentation is achieved with a Convolutional Neural Network like U-Net.
 
 
-<p float="left">    
+<p float="center">    
    <img src="./extras/imgs/11.png"  />
    <img src="./extras/imgs/11_contoured.png"  />
 
@@ -136,7 +136,7 @@ If the directory is a subfolder of more than one directory, the script will find
 _where_:
 * ```--dir ``` is the path of the directory containing the DICOM series (required).
 
-<img src="./extras/imgs/usage.png">
+<img src="./extras/imgs/Usage.png">
 
 #### Options
 

@@ -1,63 +1,53 @@
 language: python
-os: linux
-dist: xenial
-python:
-  - 3.6
-  - 3.7
-  - 3.8
-  - 3.9
-jobs:
+
+matrix:
   include:
-    - name: 'OSX - Python 3.6 '
-      os: osx
-      language: shell
-      before_install:
-        - brew install python@3.6
-        - python -m pip install --upgrade pip
-        - python -m pip --version
-        - pip install -r requirements.txt
-      install:
-        - python setup.py install
-      script:
-        - python -m pytest --cov=MRIsegm --cov-config=.coveragerc
-      - name: 'OSX - Python 3.7 '
-      os: osx
-      language: shell
-      before_install:
-        - brew install python@3.7
-        - python -m pip install --upgrade pip
-        - python -m pip --version
-        - pip install -r requirements.txt
-      install:
-        - python setup.py install
-      script:
-        - python -m pytest --cov=MRIsegm --cov-config=.coveragerc
-      - name: 'OSX - Python 3.8 '
-      os: osx
-      language: shell
+
+    - os: linux
+      python: 3.6
+      name: ubuntu 16.04 - python@3.6
+      dist: xenial
+      sudo: true
+      env:
+        - MATRIX_EVAL=""
+
+    - os: linux
+      python: 3.7
+      name: ubuntu 16.04 - python@3.7
+      dist: xenial
+      sudo: true
+      env:
+        - MATRIX_EVAL=""
+
+    - os: linux
+      python: 3.8
+      name: ubuntu 16.04 - python@3.8
+      dist: xenial
+      sudo: true
+      env:
+        - MATRIX_EVAL=""
+
+    - os: linux
+      python: 3.9
+      name: ubuntu 16.04 - python@3.9
+      dist: xenial
+      sudo: true
+      env:
+        - MATRIX_EVAL=""
+    
+    - os: osx
+      name: osx - python@3.8
+      osx_image: xcode10.2
+      language: shell 
       before_install:
         - brew install python@3.8
-        - python -m pip install --upgrade pip
-        - python -m pip --version
-        - pip install -r requirements.txt
-      install:
-        - python setup.py install
-      script:
-        - python -m pytest --cov=MRIsegm --cov-config=.coveragerc
-      - name: 'OSX - Python 3.69'
-      os: osx
-      language: shell
-      before_install:
-        - brew install python@3.9
-        - python -m pip install --upgrade pip
-        - python -m pip --version
-        - pip install -r requirements.txt
-      install:
-        - python setup.py install
-      script:
-        - python -m pytest --cov=MRIsegm --cov-config=.coveragerc
+      env:
+        - MATRIX_EVAL=""
+
+
 
 before_install:
+  - travis_retry eval "${MATRIX_EVAL}"
   - python -m pip install --upgrade pip
   - python -m pip --version
   - pip install -r requirements.txt
@@ -70,12 +60,3 @@ script:
 
 after_succes:
   - codecov
-
-notifications:
-  email:
-
-    recipients:
-      - giuseppefilitto@gmail.com
-
-    on_success: never
-    on_failure: never

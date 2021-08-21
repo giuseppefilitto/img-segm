@@ -1,6 +1,6 @@
 | **Author**  | **Project** |  **Build Status** | **License** | **Code Quality** | **Coverage** |
 |:------------:|:-----------:|:-----------------:|:-----------:|:----------------:|:------------:|
-| [**G. Filitto**](https://github.com/giuseppefilitto) | **MRI colorectal cancer segmentation** | **Linux** : ![linux](https://img.shields.io/travis/giuseppefilitto/img-segm) | ![license](https://img.shields.io/github/license/giuseppefilitto/img-segm)| **Codacy** : [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6711ffd702bd4686a98f45deb0b3a952)](https://www.codacy.com/gh/giuseppefilitto/img-segm/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=giuseppefilitto/img-segm&amp;utm_campaign=Badge_Grade) <br/> **Codebeat** : [![codebeat badge](https://codebeat.co/badges/06042d9c-8e66-4417-85af-2509891fa28c)](https://codebeat.co/projects/github-com-giuseppefilitto-img-segm-main) | [![codecov](https://codecov.io/gh/giuseppefilitto/img-segm/branch/main/graph/badge.svg?token=2POF72SN06)](https://codecov.io/gh/giuseppefilitto/img-segm) |
+| [**G. Filitto**](https://github.com/giuseppefilitto) | **MRI colorectal cancer segmentation** | **Linux** : ![linux](https://img.shields.io/travis/com/giuseppefilitto/img-segm?logo=linux&logoColor=white)  | ![license](https://img.shields.io/github/license/giuseppefilitto/img-segm)| **Codacy** : [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6711ffd702bd4686a98f45deb0b3a952)](https://www.codacy.com/gh/giuseppefilitto/img-segm/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=giuseppefilitto/img-segm&amp;utm_campaign=Badge_Grade) <br/> **Codebeat** : [![codebeat badge](https://codebeat.co/badges/06042d9c-8e66-4417-85af-2509891fa28c)](https://codebeat.co/projects/github-com-giuseppefilitto-img-segm-main) | [![codecov](https://codecov.io/gh/giuseppefilitto/img-segm/branch/main/graph/badge.svg?token=2POF72SN06)](https://codecov.io/gh/giuseppefilitto/img-segm) |
 
 
 
@@ -42,9 +42,9 @@ cancer areas on T2-weighted Magnetic Resonance Images of patient affected by col
 The segmentation is achieved with a Convolutional Neural Network like U-Net.
 
 
-<p float="center">    
-   <img src="./extras/imgs/11.png"  />
-   <img src="./extras/imgs/11_contoured.png"  />
+<p align="center">    
+   <img src="./extras/imgs/11.png" width="300" height="300" />
+   <img src="./extras/imgs/11_contoured.png"  width="300" height="300"/>
 
  </p>
 

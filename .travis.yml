@@ -34,7 +34,8 @@ matrix:
       sudo: true
       env:
         - MATRIX_EVAL=""
-    
+        
+  allow_failures:
     - os: osx
       name: "Python 3.8.0 on macOS 10.14"
       osx_image: xcode11.3

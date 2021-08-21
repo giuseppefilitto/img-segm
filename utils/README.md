@@ -16,7 +16,7 @@ cd img-segm/utils
 ```
 #### dcmsorter
 
-Move and sort DICOM files from nested dirs made like like ```patientID/EXAMINATION/DIRECTORY1/DIRECTORY2``` to ```patientID/EXAMINATION``` and save them into ```path/to/dst``` .
+Move and sort DICOM files from nested dirs made like ```patientID/EXAMINATION/DIRECTORY1/DIRECTORY2``` to ```patientID/EXAMINATION``` and save them into ```path/to/dst``` .
 
 Simply run the following command from the bash:
 

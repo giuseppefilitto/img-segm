@@ -34,28 +34,18 @@ matrix:
       sudo: true
       env:
         - MATRIX_EVAL=""
-        
-  allow_failures:
-    - os: osx
-      name: "Python 3.8.0 on macOS 10.14"
-      osx_image: xcode11.3
-      language: shell
-      env:
-        - MATRIX_EVAL=""
-
-
 
 before_install:
   - travis_retry eval "${MATRIX_EVAL}"
-  - python3 -m pip install --upgrade pip
-  - python3 -m pip --version
-  - python3 -m pip install -r requirements.txt
+  - python -m pip install --upgrade pip
+  - python -m pip --version
+  - python -m pip install -r requirements.txt
 
 install:
-  - python3 setup.py install
+  - python setup.py install
 
 script:
-  - python3 -m pytest --cov=MRIsegm --cov-config=.coveragerc
+  - python -m pytest --cov=MRIsegm --cov-config=.coveragerc
 
 after_succes:
   - codecov

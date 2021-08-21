@@ -41,6 +41,15 @@ This project provides an automatic pipeline for the segmentation of
 cancer areas on T2-weighted Magnetic Resonance Images of patient affected by colorectal cancer.
 The segmentation is achieved with a Convolutional Neural Network like U-Net.
 
+
+<p float="left">    
+   <img src="./extras/imgs/11.png"  />
+   <img src="./extras/imgs/11_contoured.png"  />
+
+ </p>
+
+**Example of segmentation** . **Left:** Original image: **Right** original image with identified tumor area.
+
 ## Contents
 
 img-segm is composed of a series of modules contained in [MRIsegm](https://github.com/giuseppefilitto/img-segm/tree/main/MRIsegm) and scripts in [utils](https://github.com/giuseppefilitto/img-segm/tree/main/utils):
@@ -54,7 +63,7 @@ For a better description of each module:
 | utils | methods to load and visualize the DICOM series and the relative Region Of Interest (ROI)|
 | processing | methods to perform operations such as denoising, resizing, predict the images |
 | models | contains the implementation of a U-net model|
-| datagenerators | contains a  method to generate data for for training the model |
+| datagenerators | contains a  method to generate data for training the model |
 | metrics | contains useful metrics for training the model |
 |losses | 	contains useful losses for training the model |
 |graphics| methods to display the predictions |
@@ -126,7 +135,10 @@ If the directory is a subfolder of more than one directory, the script will find
 
 _where_:
 * ```--dir ``` is the path of the directory containing the DICOM series (required).
-### Options
+
+<img src="./extras/imgs/usage.png">
+
+#### Options
 
 #### ```--model``` 
  Name of the model's weights saved in the [``` weights```](https://github.com/giuseppefilitto/img-segm/tree/main/data/models/weights) dir.
@@ -147,12 +159,15 @@ When enabled plot the segmented mask, between 0 and 1, of each slice
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --mask
 ```
+<img src="./extras/imgs/usage_mask.png">
+
 #### ``` --density``` 
 
 When enabled plot the the probability map between 0 and 1 of each slice over the original image
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --density
 ```
+<img src="./extras/imgs/usage_density.png">
 
 #### ``` --3D```  
 
@@ -160,6 +175,8 @@ When enabled plot the a 3D mesh plot of the segmented areas
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --3D
 ```
+<img src="./extras/imgs/usage_3D.png">
+
 ### Examples
 
 Several examples are available under the [notebooks](https://github.com/giuseppefilitto/img-segm/blob/master/notebooks) dir.
@@ -179,8 +196,8 @@ For each purpose:
 | plot 3D mesh| [3D-mesh](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/3D-mesh.ipynb)  | 
 
 
-__extras (features extraction)__:
-> :warning: Require [SimpleITK](https://simpleitk.readthedocs.io/en/master/gettingStarted.html#python-binary-files) and [pyradiomics](https://pyradiomics.readthedocs.io/en/latest/installation.html). Please ensure to have them installed.
+__features extraction (extras)__:
+> :warning: WORK IN PROGRESS! Require [SimpleITK](https://simpleitk.readthedocs.io/en/master/gettingStarted.html#python-binary-files) and [pyradiomics](https://pyradiomics.readthedocs.io/en/latest/installation.html). Please ensure to have them installed.
 
 
 | **Purpose** | **Example** |

@@ -1,7 +1,4 @@
 language: python
-
-# ==== LINUX =====
-
 os: linux
 dist: xenial
 python:
@@ -11,8 +8,6 @@ python:
   - 3.9
 jobs:
   include:
-    # ======== OSX ========= 
-
     - name: 'OSX - Python 3.6 '
       os: osx
       language: shell
@@ -62,12 +57,10 @@ jobs:
       script:
         - python -m pytest --cov=MRIsegm --cov-config=.coveragerc
 
-
 before_install:
   - python -m pip install --upgrade pip
   - python -m pip --version
   - pip install -r requirements.txt
-
 
 install:
   - python setup.py install

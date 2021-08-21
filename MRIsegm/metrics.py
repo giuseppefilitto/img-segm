@@ -7,7 +7,6 @@ __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 def dice_coef(y_true, y_pred, smooth=1):
     '''
-
     Dice coefficient, also know as Sørensen-Dice index, is used to gauge the similarity of two samples. Given 2 sets it is defined as  twice the number of elements common to both sets divided by the sum of the number of elements in each set.
 
     Parameters

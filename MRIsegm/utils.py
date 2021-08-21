@@ -12,7 +12,6 @@ __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 def rescale(im, max_value, min_value):
     '''
-
     Rescale image in range (0,255)
 
     Parameters
@@ -35,7 +34,6 @@ def rescale(im, max_value, min_value):
 
 def read_slices(filename):
     '''
-
     Read dicom file as pixel array
 
     Parameters
@@ -53,7 +51,7 @@ def read_slices(filename):
     ValueError
         filename must be .dcm format
     '''
-    name, ext = filename.split('.')
+    _, ext = filename.split('.')
 
     if ext != 'dcm':
         raise ValueError('Input filename must be a DICOM file')
@@ -65,7 +63,6 @@ def read_slices(filename):
 
 def get_slices(dir_path):
     '''
-
     Get full stack of slices from single dcm files ordered by "InstanceNumber" as a rescaled array of shape: depth, height, width
 
     Parameters
@@ -78,7 +75,6 @@ def get_slices(dir_path):
     slices: array
          array of shape: depth, height, width , ordered by "InstanceNumber" , rescaled in range (0,255)
     '''
-
     files = glob.glob(dir_path + '/*.dcm')
 
     # ordering as istance number
@@ -106,7 +102,6 @@ def get_slices_info(slices):
     Parameters
     ----------
     slices : array-like
-
     '''
     depth, height, width = slices.shape
     print(f"The image object has the following dimensions: depth:{depth}, height:{height}, width:{width}")
@@ -114,7 +109,6 @@ def get_slices_info(slices):
 
 def _dict(dict_list):
     '''
-
     Function to get true_dict from a dict of dict like {key : true_dict}
 
     Parameters
@@ -127,7 +121,6 @@ def _dict(dict_list):
     true_dict : list
         list of true_dict
     '''
-
     true_dict = []
 
     for i in dict_list:
@@ -157,7 +150,6 @@ def get_rois(roi_path):
     roi: list
         list of roi dicts orderd by position number and without "type":composite
     '''
-
     rois_list = glob.glob(roi_path + '/*.roi')
 
     rois = [read_roi_file(roi) for roi in rois_list]
@@ -192,7 +184,6 @@ def make_mask(slices, layer, rois):
     ValueError
         if there are no regions of interest: "no labels found!"
     '''
-
     positions = [rois[i].get('position') - 1 for i in range(len(rois))]
     if layer not in positions:
         raise ValueError("no labels found!")
@@ -235,7 +226,6 @@ def mask_slices(slices, rois):
     masked_slices : array
         array of shape: depth, height, width containing for each layer the proper mask
     '''
-
     masked_slices = np.zeros_like(slices)
 
     positions = [rois[i].get('position') - 1 for i in range(len(rois))]
@@ -263,9 +253,7 @@ def explore_roi(slices, layer, rois):  # pragma: no cover
           value between (0, slices.shape[0])
       rois : list
           roi list
-
       '''
-
     # -1 to match slice
     positions = [rois[i].get('position') - 1 for i in range(len(rois))]
 
@@ -303,7 +291,6 @@ def plot_random_layer(slices):  # pragma: no cover
     slices : array
         array of shape depth, height, width
     '''
-
     maxval = slices.shape[0]
     # Select random layer number
     layer = np.random.randint(0, maxval)
@@ -375,7 +362,6 @@ def display_images(display_list, figsize=(12, 8), **kwargs):  # pragma: no cover
     figsize : tuple, optional
         figsize arg of matplotlib module, by default (12, 8)
     '''
-
     plt.figure(figsize=figsize)
 
     for i, _ in enumerate(display_list):

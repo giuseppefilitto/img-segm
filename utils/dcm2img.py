@@ -24,6 +24,8 @@ def parse_args():
 
 def rescale(img, max_value, min_value):
     '''
+    Rescale image in range (0,255).
+
     Parameters
     ----------
     img :
@@ -42,6 +44,8 @@ def rescale(img, max_value, min_value):
 
 def read_dcm(filename):
     '''
+    Read dcm files as pixel array
+
     Parameters
     ----------
     filename : str
@@ -51,7 +55,6 @@ def read_dcm(filename):
     -------
         .dcm file as pixel_array image.
     '''
-
     slide = pydicom.dcmread(filename).pixel_array
 
     return slide
@@ -59,6 +62,8 @@ def read_dcm(filename):
 
 def converter(src, dst):
     '''
+    Convert .dcm files to .png
+
     Parameters
     ----------
     src : path
@@ -70,7 +75,6 @@ def converter(src, dst):
     -------
      converted .png images
     '''
-
     if not os.path.exists(src):
         raise ValueError("Path not found")
 
@@ -152,20 +156,20 @@ def main():
             input_ = os.path.join(args.src, args.patient)
             output = os.path.join(args.dst, args.patient)
 
-            list = []
+            list_ = []
             for root, dirs, files in os.walk(input_):
                 for file in files:
                     if ".dcm" in file:
-                        list.append(os.path.join(root, file))
+                        list_.append(os.path.join(root, file))
 
-            src_dir = [os.path.split(i)[0] for i in list]
+            src_dir = [os.path.split(i)[0] for i in list_]
             src_dir = set(src_dir)  # to get unique values
 
-            for dir in src_dir:
+            for dir_ in src_dir:
 
                 output = os.path.join(
-                    args.dst, args.patient, os.path.split(dir)[1])
-                converter(dir, output)
+                    args.dst, args.patient, os.path.split(dir_)[1])
+                converter(dir_, output)
 
     else:
 

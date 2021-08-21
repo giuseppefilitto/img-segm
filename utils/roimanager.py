@@ -25,7 +25,6 @@ def parse_args():
 
 def _dict(dict_list):
     '''useful to get true_dict since roi is {name file : true_dict}.'''
-
     true_dict = []
 
     for i in dict_list:
@@ -99,7 +98,7 @@ def main():
 
         plt.figure(1)
         plt.imshow(img[:, :], cmap="gray")
-        for i in range(len(x)):
+        for i, _ in enumerate(x):
             plt.fill(x[i], y[i], edgecolor='r', fill=False)
         plt.title("slice " + str(layer))
         plt.axis('off')

@@ -8,7 +8,6 @@ __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 def dice_loss(y_true, y_pred):
     '''
-
     Also know as dice distance, measures dissimilarity between sample sets, it is complementary to the dice coefficient and it is obtained by subtracting the dice coefficient from 1.
 
     Parameters
@@ -37,7 +36,6 @@ def dice_loss(y_true, y_pred):
 
 def DiceBCEloss(y_true, y_pred):
     '''
-
     This loss combines Dice loss with the standard binary cross-entropy (BCE) loss that is generally the default for segmentation models. Combining the two methods allows for some diversity in the loss, while benefitting from the stability of BCE.
 
     Parameters
@@ -69,7 +67,6 @@ def DiceBCEloss(y_true, y_pred):
 
 def soft_dice_loss(y_true, y_pred):
     '''
-
     Soft dice distance, measures dissimilarity between sample sets, it is complementary to the dice coefficient and it is obtained by subtracting the dice coefficient from 1. It is similar to dice loss but |X| + |Y| is obtained as y_true**2 + y_pred**2
 
     Parameters

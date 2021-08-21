@@ -27,7 +27,7 @@ def parse_args():
 def sorter(input_path, output_path, patient):
     '''
 
-    Sort by "InstanceNumber" dcm files in input_path dirs like ```patientID/EXAMINATION/DIRECTORY1/DIRECTORY2``` to ```patientID/EXAMINATION``` and save them into output_path
+    Sort by "InstanceNumber" dcm files in input_path dirs like ```patientID/EXAMINATION/DIRECTORY1/DIRECTORY2``` to ```patientID/EXAMINATION``` and save them into output_path.
 
     Parameters
     ----------
@@ -36,7 +36,7 @@ def sorter(input_path, output_path, patient):
     output_path : str
         path of destination folder.
     patient: str
-        ID of the patient
+        ID of the patient.
 
     Returns
     -------

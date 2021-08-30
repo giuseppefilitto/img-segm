@@ -28,7 +28,7 @@ class IndexTracker:
             stack of slices
         '''
         self.ax = ax
-        ax.set_xlabel('use scroll wheel to navigate layers')
+        ax.set_xlabel('use scroll wheel to navigate slices')
         self.slices = slices
         self.index = 0
         try:

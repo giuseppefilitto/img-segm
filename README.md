@@ -53,7 +53,7 @@ The segmentation is achieved with a Convolutional Neural Network like U-Net.
 ## Contents
 
 img-segm is composed of a series of modules contained in [MRIsegm](https://github.com/giuseppefilitto/img-segm/tree/main/MRIsegm) and scripts in [utils](https://github.com/giuseppefilitto/img-segm/tree/main/utils):
-- modules allows to load, visualize, processing the DICOM series and to train a [U-Net](https://github.com/giuseppefilitto/img-segm/blob/main/extras/U-Net%20arch.jpeg) model. 
+- modules allow one to load, visualize, processing the DICOM series and to train a [U-Net](https://github.com/giuseppefilitto/img-segm/blob/main/extras/U-Net%20arch.jpeg) model. 
 - scripts provide a fast way to handle DICOM series and ROI from command line.
 
 For a better description of each module:
@@ -122,10 +122,9 @@ python -m pytest
 ```
 ## Usage
 Once you have installed it, you can start to segment the images directly from your bash.
-The input **dir** is a DICOM series, pass the path to the directory containing
-the series files.
+The input ```--dir``` is the path of the dir containing the DICOM series.
 Please ensure that the folder contains only one series.
-If the directory is a subfolder of more than one directory, the script will find automatically the subfolder containing the DICOM series.
+If the directory is a nested dir, the script will find automatically the sub-dir containing the DICOM series.
 
 ### Quick Start
 

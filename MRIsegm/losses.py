@@ -67,7 +67,7 @@ def DiceBCEloss(y_true, y_pred):
 
 def soft_dice_loss(y_true, y_pred):
     '''
-    Soft dice distance, measures dissimilarity between sample sets, it is complementary to the dice coefficient and it is obtained by subtracting the dice coefficient from 1. It is similar to dice loss but |X| + |Y| is obtained as y_true**2 + y_pred**2
+    Soft dice distance, measures dissimilarity between sample sets, it is complementary to the dice coefficient and it is obtained by subtracting the dice coefficient from 1. It is similar to dice loss but abs(X) + abs(Y) is obtained as y_true**2 + y_pred**2
 
     Parameters
     ----------

@@ -2,7 +2,7 @@
 |:------------:|:-----------:|:-----------------:|:-----------:|:----------------:|:------------:|
 | [**G. Filitto**](https://github.com/giuseppefilitto) | **MRI colorectal cancer segmentation** | **Linux** : ![linux](https://img.shields.io/travis/com/giuseppefilitto/img-segm?logo=linux&logoColor=white)  | ![license](https://img.shields.io/github/license/giuseppefilitto/img-segm)| **Codacy** : [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6711ffd702bd4686a98f45deb0b3a952)](https://www.codacy.com/gh/giuseppefilitto/img-segm/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=giuseppefilitto/img-segm&amp;utm_campaign=Badge_Grade) <br/> **Codebeat** : [![codebeat badge](https://codebeat.co/badges/06042d9c-8e66-4417-85af-2509891fa28c)](https://codebeat.co/projects/github-com-giuseppefilitto-img-segm-main) | [![codecov](https://codecov.io/gh/giuseppefilitto/img-segm/branch/main/graph/badge.svg?token=2POF72SN06)](https://codecov.io/gh/giuseppefilitto/img-segm) |
 
-
+[![Documentation Status](https://readthedocs.org/projects/img-segm/badge/?version=latest)](https://img-segm.readthedocs.io/en/latest/?badge=latest)
 
 [![GitHub stars](https://img.shields.io/github/stars/giuseppefilitto/img-segm?style=social)](https://github.com/giuseppefilitto/img-segm/stargazers)
 [![GitHub watchers](https://img.shields.io/github/watchers/giuseppefilitto/img-segm.svg?label=Watch&style=social)](https://github.com/giuseppegilitto/img-segm/watchers)
@@ -27,9 +27,9 @@ This package provides a series of modules and scripts to visualize, pre-process 
 ## Overview
 
 Colorectal cancer is a malignant neoplasm of the large intestine resulting from the uncontrolled proliferation of one of the cells making up the colorectal tract. 
-In Western countries, colorectal cancer is the second largest malignant tumor after that of the breast in women and the third after that of the lung and prostate in men. 
+Colorectal cancer is the second malignant tumor per number of deaths after the lung cancer and the third per number of new cases after the breast and lung cancer. 
 Risk factors for this kind of cancer include colon polyps, long-standing ulcerative colitis, diabetes II and genetic history (HNPCC or Lynch syndrome). 
-In order to get information about diagnosis, therapy evaluation on colorectal cancer, radiomic analysis can be performed on radiological images through the application of dedicated radiomic algorithms.
+In order to get information about diagnosis, therapy evaluation on colorectal cancer, analysis on radiological images can be performed through the application of dedicated algorithms.
 
 In this scenario, the correct and fast identification of the cancer regions is a
 fundamental task. 
@@ -48,13 +48,15 @@ The segmentation is achieved with a Convolutional Neural Network like U-Net.
 
  </p>
 
-**Example of segmentation** . **Left:** Original image: **Right** original image with identified tumor area.
+**Example of segmentation** . **Left):** Original MRI scan of a patient affected by colorectal cancer. **Right):** Original MRI scan of a patient affected by colorectal cancer with identified tumor area.
 
 ## Contents
 
 img-segm is composed of a series of modules contained in [MRIsegm](https://github.com/giuseppefilitto/img-segm/tree/main/MRIsegm) and scripts in [utils](https://github.com/giuseppefilitto/img-segm/tree/main/utils):
 - modules allow one to load, visualize, processing the DICOM series and to train a [U-Net](https://github.com/giuseppefilitto/img-segm/blob/main/extras/U-Net%20arch.jpeg) model. 
 - scripts provide a fast way to handle DICOM series and ROI from command line.
+
+The documentation can be found [here](https://img-segm.readthedocs.io/en/latest/?badge=latest).
 
 For a better description of each module:
 
@@ -154,7 +156,7 @@ _where_:
 
 #### ```--mask``` 
 
-When enabled plot the segmented mask, between 0 and 1, of each slice
+When enabled plot the segmented mask, between 0 and 1, of each slice.
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --mask
 ```
@@ -162,7 +164,7 @@ When enabled plot the segmented mask, between 0 and 1, of each slice
 
 #### ``` --density``` 
 
-When enabled plot the the probability map between 0 and 1 of each slice over the original image
+When enabled plot the predicted probability map between 0 and 1 of each slice over the original image.
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --density
 ```
@@ -170,7 +172,7 @@ When enabled plot the the probability map between 0 and 1 of each slice over the
 
 #### ``` --3D```  
 
-When enabled plot the a 3D mesh plot of the segmented areas
+When enabled plot the a 3D mesh of the segmented areas.
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --3D
 ```
@@ -185,8 +187,8 @@ For each purpose:
 | **Purpose** | **Example** |
 |:----------:|:---------------:|
 | load, visualize DICOM series  |  [DicomExplorer](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/DicomExplorer.ipynb)   |
-| perform Image processing operation  |  [ImageProcessing](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/ImageProcessing.ipynb)  |
-|   Pre-process the images for model's training |   [Pre-processing](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Pre-processing.ipynb)  |
+| perform Image processing operations  |  [ImageProcessing](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/ImageProcessing.ipynb)  |
+|   Pre-process the images for model training |   [Pre-processing](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Pre-processing.ipynb)  |
 |  train a U-net model |    [UNet-Segmentation](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/UNet-Segmentation.ipynb) |
 |       train a model from [segmentation-models](https://github.com/qubvel/segmentation_models)|  [SM-Segmentation](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/SM-Segmentation.ipynb)   |
 |    Display the predictions  |      [Predictions](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Predictions.ipynb)   |

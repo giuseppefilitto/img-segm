@@ -156,7 +156,7 @@ _where_:
 
 #### ```--mask``` 
 
-When enabled plot the segmented mask, between 0 and 1, of each slice.
+When enabled plot the predicted binary [0, 1] mask of each slice.
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --mask
 ```
@@ -164,7 +164,7 @@ When enabled plot the segmented mask, between 0 and 1, of each slice.
 
 #### ``` --density``` 
 
-When enabled plot the predicted probability map between 0 and 1 of each slice over the original image.
+When enabled plot the predicted probability map between 0. and 1. of each slice over the original image.
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --density
 ```

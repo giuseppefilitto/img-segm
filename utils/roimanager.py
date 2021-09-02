@@ -13,8 +13,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--src', dest='src', required=True, type=str,
                         action='store', help='source directory')
-    parser.add_argument('--patience', dest='patience', required=True, type=str,
-                        action='store', help='Patience name', default='')
+    parser.add_argument('--patient', dest='patient', required=True, type=str,
+                        action='store', help='patient name', default='')
     parser.add_argument('--weight', dest='weight', required=True, type=str,
                         action='store', help='weight (i.e. T2 or DWI)', default='T2')
 
@@ -47,7 +47,7 @@ def main():
     if not os.path.isdir(args.src):
         raise ValueError('Incorrect directory given')
 
-    roi_dir = os.path.join(args.src, args.patience, args.weight + 'ROI')
+    roi_dir = os.path.join(args.src, args.patient, args.weight + 'ROI')
 
     toggle = 0
     if os.path.isdir(roi_dir + "alta" or roi_dir + "bassa"):
@@ -71,7 +71,7 @@ def main():
     # filtering rois with no coordinates
     ROIs = list(filter(lambda d: d['type'] != 'composite', ROIs))
 
-    img_dir = os.path.join(args.src, args.patience, args.weight)
+    img_dir = os.path.join(args.src, args.patient, args.weight)
 
     if not os.path.isdir(img_dir):
         img_dir = img_dir + "AX"
@@ -80,10 +80,10 @@ def main():
             img_dir = img_dir + inp
 
             if not os.path.isdir(img_dir):
-                img_dir = os.path.join(args.src, args.patience, args.weight)
+                img_dir = os.path.join(args.src, args.patient, args.weight)
                 img_dir = img_dir + "5mm"
 
-    positions = [ROIs[i].get('position') - 1 for i in range(len(ROIs))]
+    positions = [ROIs[i].get('position') for i in range(len(ROIs))]
 
     for layer in set(positions):
 
@@ -91,7 +91,7 @@ def main():
         img = pydicom.dcmread(img_path).pixel_array
         img = np.asarray(img)
 
-        roi = list(filter(lambda d: d['position'] == layer + 1, ROIs))
+        roi = list(filter(lambda d: d['position'] == layer, ROIs))
 
         x = [roi[i].get('x') for i in range(len(roi))]
         y = [roi[i].get('y') for i in range(len(roi))]

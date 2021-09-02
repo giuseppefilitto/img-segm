@@ -2,7 +2,7 @@ Usage
 =====
 
 Once you have installed it, you can start to segment the images directly from your bash.
-The input ```--dir``` is the path of the dir containing the DICOM series.
+The input ``--dir`` is the path of the dir containing the DICOM series.
 Please ensure that the folder contains only one series.
 If the directory is a nested dir, the script will find automatically the sub-dir containing the DICOM series.
 
@@ -39,7 +39,7 @@ notes:
 
 ``--mask``
 
-When enabled plot the segmented mask, between 0 and 1, of each slice.
+When enabled plot the predicted binary [0,1] mask of each slice.
 
 .. code-block:: bash
 

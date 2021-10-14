@@ -104,14 +104,13 @@ def denoise_nlm(img, alpha, show=False, **kwargs):  # pragma: no cover
 
     if show:
         figsize = kwargs.get('figsize')
-        ax = plt.subplots(1, 2, figsize=(
-            figsize), constrained_layout=True)
-
+        fig, ax = plt.subplots(1, 2, figsize=figsize, constrained_layout=True)
+        ax[0].axis('off')
         ax[0].imshow(img, cmap="gray")
         ax[0].set_title("original")
-
+        ax[1].axis('off')
         ax[1].imshow(denoised_img, cmap="gray")
-        ax[1].set_title("after NLM denoise")
+        ax[1].set_title("filtered")
 
     else:
         return denoised_img.astype('uint8')
@@ -165,7 +164,7 @@ def compare_denoised_histo(img, alpha, figsize=(15, 15)):  # pragma: no cover
 
     plt.subplot(2, 2, 1)
     plt.imshow(img, cmap='gray')
-    plt.title('Image', fontsize=15)
+    plt.title('original', fontsize=15)
     plt.subplot(2, 2, 2)
     plt.hist(img.ravel(), 256, [0, 256], color="black")
     plt.title('Histogram', fontsize=15)
@@ -173,7 +172,7 @@ def compare_denoised_histo(img, alpha, figsize=(15, 15)):  # pragma: no cover
     plt.subplot(2, 2, 3)
     denoised_img = denoise_nlm(img, alpha)
     plt.imshow(denoised_img, cmap='gray')
-    plt.title('Image denoised', fontsize=15)
+    plt.title('filtered', fontsize=15)
     plt.subplot(2, 2, 4)
     plt.hist(denoised_img.ravel(), 256, [0, 256], color="black")
     plt.title('Histogram', fontsize=15)
@@ -314,3 +313,92 @@ def contour_slices(slices, predicted_slices):
         contoured_slices[layer, ...] = cont
 
     return contoured_slices
+
+
+def crop_image(img):
+
+    height, width = img.shape[0], img.shape[1]
+
+    if height != 512:
+        img = cv2.resize(img, (512, 512))
+
+    assert img.shape[0] == 512
+
+    y, x = 256, 256
+    dy, dx = y // 2, x // 2
+
+    return (img[(y - dy):(y + dy), (x - dx):(x + dx)])
+
+
+def rescale(img):
+    rescaled = cv2.normalize(img, dst=None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+    return rescaled
+
+
+def denoise(img, alpha=10):
+
+    patch_kw = dict(patch_size=5, patch_distance=6,)
+    sigma_est = np.mean(estimate_sigma(img))
+    denoised = denoise_nl_means(img, h=alpha * sigma_est, sigma=sigma_est, fast_mode=True, **patch_kw)
+    return denoised
+
+
+def gamma_correction(img, gamma=1.0):
+    igamma = 1.0 / gamma
+    imin, imax = img.min(), img.max()
+
+    img_c = img.copy()
+    img_c = ((img_c - imin) / (imax - imin)) ** igamma
+    img_c = img_c * (imax - imin) + imin
+    return img_c
+
+
+
+def pre_processing_data(slices, alpha=10):
+
+    imgs = []
+    for layer in range(slices.shape[0]):
+        img = slices[layer, :, :]
+        if slices.shape[1:3] != 512:
+            resized = cv2.resize(img, (512, 512))
+        else:
+            resized = img
+        rescaled = rescale(resized)
+        denoised = denoise(rescaled, alpha)
+        gamma = gamma_correction(denoised)
+        imgs.append(gamma)
+
+    images = [np.expand_dims(im, axis=-1) for im in imgs]
+    images = np.array(images)
+
+    return images
+
+
+def predict_images(slices, model, pre_processing=False, t=0.1):
+
+    if pre_processing:
+        prep_slices = pre_processing_data(slices)
+    else:
+        prep_slices = slices
+
+    predicted_slices = np.zeros_like(prep_slices)
+
+    for layer in range(slices.shape[0]):
+        img = prep_slices[layer, ...]
+        predicted_slices[layer, ...] = model.predict(img[np.newaxis, ...])[...]
+        predicted_slices[layer, ...] = np.where(predicted_slices[layer, ...] <= 0.1, 0, predicted_slices[layer, ...])
+
+
+    return predicted_slices
+
+
+def crop_masks(slices):
+    imgs = []
+    for layer in range(slices.shape[0]):
+        img = slices[layer, :, :]
+        cropped = crop_image(img)
+
+        imgs.append(cropped)
+
+    images = np.array(imgs)
+    return images

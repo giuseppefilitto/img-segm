@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from MRIsegm.utils import get_slices
-from MRIsegm.processing import denoise_slices, predict_slices, resize_slices, contour_slices
+from MRIsegm.processing import pre_processing_data, predict_images, contour_slices
 from MRIsegm.losses import DiceBCEloss
 from MRIsegm.metrics import dice_coef
 
@@ -31,10 +31,9 @@ class IndexTracker:
         ax.set_xlabel('use scroll wheel to navigate slices')
         self.slices = slices
         self.index = 0
-        try:
-            self.im = ax.imshow(self.slices[self.index, :, :], cmap='gray')
-        except:
-            self.im = ax.imshow(self.slices[self.index, ...])
+
+        self.im = ax.imshow(self.slices[self.index, ...], cmap='gray', vmin=0.0, vmax=1.0)
+
         self.update()
 
     def on_scroll(self, event):
@@ -75,10 +74,10 @@ class DensityIndexTracker:
 
         self.background = ax.imshow(
             self.slices[self.index, ...], cmap='gray', vmin=0.0, vmax=1.0)
-        predictions[predictions <= 0.0005] = np.nan
 
+        predictions[predictions <= 0.005] = np.nan
         self.density = ax.imshow(
-            predictions[self.index, ...], cmap='magma', vmin=0.0, vmax=1.0, alpha=0.7)
+            predictions[self.index, ...], cmap='RdYlGn', vmin=0.0, vmax=1.0, alpha=0.7)
 
         cax = inset_axes(self.ax, width="5%", height="100%", loc='lower left',
                          bbox_to_anchor=(1.02, 0., 1, 1), bbox_transform=self.ax.transAxes,
@@ -111,7 +110,7 @@ def parse_args():
     parser.add_argument('--dir', dest='dir', required=True, type=str,
                         action='store', help='DCM directory')
     parser.add_argument('--model', dest='model', required=False, type=str,
-                        action='store', help='segmentation model (set in default)', default='efficientnetb0_256_256_BTC=8_alpha3_OPT=Adam_LOSS=DiceBCEloss')
+                        action='store', help='segmentation model (set in default)', default='efficientnetb0_BTC=4_full_new_OPT=adam_LOSS=DiceBCEloss')
     parser.add_argument('--mask', dest='mask', action='store_true',
                         help='plot predicted mask', default=False)
     parser.add_argument('--density', dest='density', action='store_true',
@@ -131,7 +130,7 @@ def main():
     dir_path = args.dir
 
     try:
-        slices = get_slices(dir_path)
+        slices = get_slices(dir_path, uint8=False)
     except:
         for root, dirs, files in os.walk(dir_path):
             for file in files:
@@ -140,14 +139,11 @@ def main():
                     break
 
         print(f"dcm files from: {dir_path}")
-        slices = get_slices(dir_path)
+        slices = get_slices(dir_path, uint8=False)
 
-    print("[denoising...]")
-    alpha = 3
-    slices = denoise_slices(slices, alpha)
+    print("[pre-processing data...]")
 
-    print("[denoising done.]")
-
+    pre_processed = pre_processing_data(slices)
 
     # model
     models_dir = 'data/models'
@@ -181,36 +177,23 @@ def main():
         model = model_from_json(data)
         model.load_weights(model_weights)
 
-        optimizer = 'Adam'
+        optimizer = 'adam'
         loss = DiceBCEloss
         metrics = [dice_coef]
 
         model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 
 
-    # image specs
+    predicted = predict_images(pre_processed, model)
 
-    IMAGE_HEIGHT = 256
-    IMAGE_WIDTH = 256
-    IMG_SIZE = (IMAGE_HEIGHT, IMAGE_WIDTH)
-
-    if slices.shape[1:3] != IMG_SIZE:
-        print(f"[images rescaled {slices.shape[1:3]} --> {IMG_SIZE}]")
-
-    predicted = predict_slices(
-        slices, model, IMAGE_HEIGHT, IMAGE_WIDTH)
-
-    resized = resize_slices(slices, IMAGE_HEIGHT, IMAGE_WIDTH)
-    countured = contour_slices(resized, predicted)
-
+    contoured = contour_slices(pre_processed, predicted)
 
 
     if args.mask:
-        t = 0.01
         pred = predicted.copy()
         for i in range(pred.shape[0]):
-            pred[i, ...][pred[i, ...] > t] = 1
-            pred[i, ...][pred[i, ...] <= t] = 0
+            pred[i, ...] = np.where(pred[i, ...] >= 0.1, 1, 0)
+
         fig, ax = plt.subplots(1, 1)
         tracker = IndexTracker(ax=ax, slices=pred)
 
@@ -223,16 +206,35 @@ def main():
         fig, ax = plt.subplots(1, 1)
 
         tracker = DensityIndexTracker(
-            ax=ax, slices=resized, predictions=predicted.copy())
+            ax=ax, slices=pre_processed, predictions=predicted.copy())
 
         fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
         plt.show()
         exit(1)
 
     if args.mesh3D:
+        from matplotlib.colors import LightSource
 
         predicted_sq = np.squeeze(predicted, axis=-1)
-        verts, faces, _, _ = marching_cubes(predicted_sq)
+        verts, faces, normals, values = marching_cubes(predicted_sq)
+        ls = LightSource(azdeg=225.0, altdeg=45.0)
+
+        normalsarray = np.array([np.array((np.sum(normals[face[:], 0] / 3), np.sum(normals[face[:], 1] / 3), np.sum(normals[face[:], 2] / 3)) / np.sqrt(np.sum(normals[face[:], 0] / 3)**2 + np.sum(normals[face[:], 1] / 3)**2 + np.sum(normals[face[:], 2] / 3)**2)) for face in faces])
+
+        min = np.min(ls.shade_normals(normalsarray, fraction=1.0))  # min shade value
+        max = np.max(ls.shade_normals(normalsarray, fraction=1.0))  # max shade value
+        diff = max - min
+        newMin = 0.3
+        newMax = 0.95
+        newdiff = newMax - newMin
+
+        # Using a constant color, put in desired RGB values here.
+        colourRGB = np.array((255.0 / 255.0, 54.0 / 255.0, 57 / 255.0, 1.0))
+
+        # The correct shading for shadows are now applied. Use the face normals and light orientation to generate a shading value and apply to the RGB colors for each face.
+        rgbNew = np.array([colourRGB * (newMin + newdiff * ((shade - min) / diff)) for shade in ls.shade_normals(normalsarray, fraction=1.0)])
+
+
 
         fig = plt.figure(figsize=(10, 8))
         ax = fig.add_subplot(111, projection="3d")
@@ -241,18 +243,26 @@ def main():
         ax.set_ylim(np.min(verts[:, 1]), np.max(verts[:, 1]))
         ax.set_zlim(np.min(verts[:, 2]), np.max(verts[:, 2]))
 
-        mesh = Poly3DCollection(verts[faces], edgecolors='teal', facecolors='orange', alpha=0.8)
+        mesh = Poly3DCollection(verts[faces], alpha=1)
+
+        # Apply color to face
+        mesh.set_facecolor(rgbNew)
+
         ax.add_collection3d(mesh)
         plt.tight_layout()
         plt.show()
         exit(1)
 
     fig, ax = plt.subplots(1, 1)
-
-    tracker = IndexTracker(ax=ax, slices=countured)
-
+    tracker = IndexTracker(ax=ax, slices=contoured)
     fig.canvas.mpl_connect('scroll_event', tracker.on_scroll)
     plt.show()
+
+    pred_f = np.squeeze(predicted, axis=-1)
+    t = 0.01
+    for i in range(pred_f.shape[0]):
+        pred_f[i, ...][pred_f[i, ...] > t] = 255
+        pred_f[i, ...][pred_f[i, ...] <= t] = 0
 
 
 if __name__ == '__main__':

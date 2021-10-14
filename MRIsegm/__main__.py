@@ -4,9 +4,10 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
+from segmentation_models.losses import DiceLoss, BinaryFocalLoss
+
 from MRIsegm.utils import get_slices
 from MRIsegm.processing import pre_processing_data, predict_images, contour_slices
-from MRIsegm.losses import DiceBCEloss
 from MRIsegm.metrics import dice_coef
 
 from skimage.measure import marching_cubes
@@ -110,7 +111,7 @@ def parse_args():
     parser.add_argument('--dir', dest='dir', required=True, type=str,
                         action='store', help='DCM directory')
     parser.add_argument('--model', dest='model', required=False, type=str,
-                        action='store', help='segmentation model (set in default)', default='efficientnetb0_BTC=4_full_new_OPT=adam_LOSS=DiceBCEloss')
+                        action='store', help='segmentation model (set in default)', default='efficientnetb0_BTC=4_full_150E_OPT=adam_LOSS=dice_loss_plus_1binary_focal_loss')
     parser.add_argument('--mask', dest='mask', action='store_true',
                         help='plot predicted mask', default=False)
     parser.add_argument('--density', dest='density', action='store_true',
@@ -154,10 +155,16 @@ def main():
 
         print(f"[loading model --> {args.model}]")
 
+        dice_loss = DiceLoss()
+        focal_loss = BinaryFocalLoss()
+        loss = dice_loss + (1 * focal_loss)
+
         dependencies = {
-            'DiceBCEloss': DiceBCEloss,
             'dice_coef': dice_coef,
-            'FixedDropout': tf.keras.layers.Dropout(0.2)
+            'FixedDropout': tf.keras.layers.Dropout(0.2),
+            'dice_loss': dice_loss,
+            'dice_loss_plus_1binary_focal_loss': loss
+
         }
 
         model = tf.keras.models.load_model(model_path, custom_objects=dependencies)
@@ -178,7 +185,11 @@ def main():
         model.load_weights(model_weights)
 
         optimizer = 'adam'
-        loss = DiceBCEloss
+
+        dice_loss = DiceLoss()
+        focal_loss = BinaryFocalLoss()
+        loss = dice_loss + (1 * focal_loss)
+
         metrics = [dice_coef]
 
         model.compile(optimizer=optimizer, loss=loss, metrics=metrics)

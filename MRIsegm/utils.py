@@ -61,7 +61,7 @@ def read_slices(filename):
     return pix_arr
 
 
-def get_slices(dir_path):
+def get_slices(dir_path, uint8=True):
     '''
     Get full stack of slices from single dcm files ordered by "InstanceNumber" as a rescaled array of shape: depth, height, width
 
@@ -69,11 +69,13 @@ def get_slices(dir_path):
     ----------
     dir_path : str
         directory of dcm slices
+    uint8 : bool
+        rescale the image to uint8, by default True
 
     Returns
     -------
     slices: array
-         array of shape: depth, height, width , ordered by "InstanceNumber" , rescaled in range (0,255)
+         array of shape: depth, height, width , ordered by "InstanceNumber"
     '''
     files = glob.glob(dir_path + '/*.dcm')
 
@@ -85,12 +87,13 @@ def get_slices(dir_path):
 
     slices = [read_slices(f) for f in files]
 
-    Max = max([x.max() for x in slices])
-    Min = min([x.min() for x in slices])
-
-    slices = [rescale(x, Max, Min) for x in slices]
-
-    slices = np.asarray(slices)
+    if uint8:
+        Max = max([x.max() for x in slices])
+        Min = min([x.min() for x in slices])
+        slices = [rescale(x, Max, Min) for x in slices]
+        slices = np.asarray(slices)
+    else:
+        slices = np.asarray(slices)
 
     return slices
 

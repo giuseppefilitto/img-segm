@@ -52,6 +52,26 @@ def create_segmentation_generator(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEE
 class DataGenerator:
 
     def __init__(self, batch_size, source_path, label_path, aug=False, seed=123, validation_split=0., subset='training'):
+        '''
+        Custom DataGenerator
+
+        Parameters
+        ----------
+        batch_size : int
+            batch size
+        source_path : str
+            path of the directory containing dicom files
+        label_path : str
+            path of the directory containing labels images
+        aug : bool, optional
+            data augmentation, by default False
+        seed : int, optional
+            random seed, by default 123
+        validation_split : optional
+            validation split rate, by default 0.
+        subset : str, optional
+            set training or validation subset of data, by default 'training'
+        '''
 
 
         np.random.seed(seed)

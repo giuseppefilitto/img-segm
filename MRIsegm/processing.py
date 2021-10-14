@@ -316,6 +316,19 @@ def contour_slices(slices, predicted_slices):
 
 
 def crop_image(img):
+    '''
+    Crop full image to center from 512x512 to 256 x 256
+
+    Parameters
+    ----------
+    img : array like
+        image to be cropped
+
+    Returns
+    -------
+    array like image
+        cropped image
+    '''
 
     height, width = img.shape[0], img.shape[1]
 
@@ -331,11 +344,39 @@ def crop_image(img):
 
 
 def rescale(img):
+    '''
+    Normalize and rescale image to binary floating 32-bit
+
+    Parameters
+    ----------
+    img : image, array like
+        image to be normalized and rescaled
+
+    Returns
+    -------
+    image, array like
+        [normalaized and rescaled image
+    '''
     rescaled = cv2.normalize(img, dst=None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
     return rescaled
 
 
 def denoise(img, alpha=10):
+    '''
+    Denoise the image using non-local means algorithm
+
+    Parameters
+    ----------
+    img : image, array like
+        image to be denoised
+    alpha : float, optional
+        smoothing parameter, by default 10
+
+    Returns
+    -------
+    image, array like
+        smoothed denoised image
+    '''
 
     patch_kw = dict(patch_size=5, patch_distance=6,)
     sigma_est = np.mean(estimate_sigma(img))
@@ -344,6 +385,21 @@ def denoise(img, alpha=10):
 
 
 def gamma_correction(img, gamma=1.0):
+    '''
+    Perform gamma correction. The true value of gamma used in the formula is 1/gamma.
+
+    Parameters
+    ----------
+    img : image, array like
+        image to be filtered
+    gamma : float, optional
+        gamma value, by default 1.0
+
+    Returns
+    -------
+    image, array like
+        gamma corrected image
+    '''
     igamma = 1.0 / gamma
     imin, imax = img.min(), img.max()
 
@@ -355,6 +411,21 @@ def gamma_correction(img, gamma=1.0):
 
 
 def pre_processing_data(slices, alpha=10):
+    '''
+    Single-shot preprocessind data function. Performing rescaling, denoising, gamma correction.
+
+    Parameters
+    ----------
+    slices : array of shape: (depth, hight, width)
+        stack of images to be preprocessed
+    alpha : float, optional
+        smoothing parameter, by default 10
+
+    Returns
+    -------
+    array of shape: (depth, hight, width)
+        pre-processed slices
+    '''
 
     imgs = []
     for layer in range(slices.shape[0]):
@@ -375,6 +446,25 @@ def pre_processing_data(slices, alpha=10):
 
 
 def predict_images(slices, model, pre_processing=False, t=0.1):
+    '''
+    Predict full stack of slices, slice by slice
+
+    Parameters
+    ----------
+    slices : array of shape: (depth, hight, width)
+        stack of images
+    model : Tensorflow-Keras model instance
+        loaded .h5 keras model by tf.keras.model.load_model()
+    pre_processing : bool, optional
+        if true pre-process the images, by default False
+    t : float, optional
+        threshold parameter. Values below this threshold value are set to 0, by default 0.1
+
+    Returns
+    -------
+    array of shape: (depth, hight, width, 1)
+        stack of predicted images, corresponding to the prediction for the original slices.
+    '''
 
     if pre_processing:
         prep_slices = pre_processing_data(slices)
@@ -393,6 +483,19 @@ def predict_images(slices, model, pre_processing=False, t=0.1):
 
 
 def crop_masks(slices):
+    '''
+    Crop slices of masks
+
+    Parameters
+    ----------
+    slices : array of shape: (depth, hight, width)
+        stack of masks to be cropped
+
+    Returns
+    -------
+    array of shape: (depth, hight, width)
+        stack of cropped masks
+    '''
     imgs = []
     for layer in range(slices.shape[0]):
         img = slices[layer, :, :]

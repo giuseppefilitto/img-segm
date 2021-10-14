@@ -10,7 +10,6 @@ tensorflow>=2.5.0
 sphinx==4.1.2
 sphinx-rtd-theme
 sphinxcontrib-napoleon
-sphinxcontrib-autodoc
 sphinxcontrib-programoutput
 nbsphinx==0.8.7
 IPython

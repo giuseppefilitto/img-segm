@@ -110,9 +110,32 @@ class DataGenerator:
 
     @property
     def num_data(self):
+        '''
+        check the number of files for the relative subset
+
+        Returns
+        -------
+        int
+            number of files (images)
+        '''
         return self._num_data
 
     def randomize(self, source, label):
+        '''
+        Shuffle data
+
+        Parameters
+        ----------
+        source : array
+            files paths
+        label : array
+            labels paths
+
+        Returns
+        -------
+        tuple
+            randomized source and label paths
+        '''
 
         random_index = np.arange(0, source.size)
         np.random.shuffle(random_index)
@@ -123,6 +146,21 @@ class DataGenerator:
 
 
     def resize(self, img, lbl):
+        '''
+        resize input and labels images
+
+        Parameters
+        ----------
+        img : image
+            input image
+        lbl : image
+            label image
+
+        Returns
+        -------
+        tuple
+            resized input and label image
+        '''
 
         height, width = img.shape[0], img.shape[1]
 
@@ -137,6 +175,21 @@ class DataGenerator:
 
 
     def crop(self, img, lbl):
+        '''
+        crop input and labels images
+
+        Parameters
+        ----------
+        img : image
+            input image
+        lbl : image
+            label image
+
+        Returns
+        -------
+        tuple
+            cropped input and label image
+        '''
 
         height, width = img.shape[0], img.shape[1]
 
@@ -152,6 +205,21 @@ class DataGenerator:
         return (img[(y - dy):(y + dy), (x - dx):(x + dx)], lbl[(y - dy):(y + dy), (x - dx):(x + dx)])
 
     def random_vflip(self, img, lbl):
+        '''
+        random vertical flip input and label images
+
+        Parameters
+        ----------
+        img : image
+            input image
+        lbl : image
+            label image
+
+        Returns
+        -------
+        tuple
+            randomly vertical flipped input and label image
+        '''
         idx = np.random.uniform(low=0., high=1.)
         if idx > 0.5:
             return (cv2.flip(img, 0), cv2.flip(lbl, 0))
@@ -159,39 +227,59 @@ class DataGenerator:
             return (img, lbl)
 
     def random_hflip(self, img, lbl):
+        '''
+        random horizontal flip input and label images
+
+        Parameters
+        ----------
+        img : image
+            input image
+        lbl : image
+            label image
+
+        Returns
+        -------
+        tuple
+            randomly horizontal flipped input and label image
+        '''
+
         idx = np.random.uniform(low=0., high=1.)
         if idx > 0.5:
             return (cv2.flip(img, 1), cv2.flip(lbl, 1))
         else:
             return (img, lbl)
 
-    def random_rotation(self, img, lbl):
-        idx = np.random.uniform(low=0., high=1.)
-        if idx > 0.5:
-            def rotate(image, angle):
-                (h, w) = image.shape[:2]
-                center = (w / 2, h / 2)
-
-                # Perform the rotation
-                M = cv2.getRotationMatrix2D(center, angle, 1.)
-                rotated = cv2.warpAffine(image, M, (w, h))
-
-                return rotated
-
-            angle = np.random.randint(low=0, high=360)
-            rotate_image = rotate(img, angle)
-            rotate_lbl = rotate(lbl, angle)
-            _, rotate_lbl = cv2.threshold(rotate_lbl, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-            return (rotate_image, rotate_lbl)
-        else:
-            return (img, lbl)
-
-
     def rescale(self, img):
+        '''
+        Normalize and rescale image to binary floating 32-bit
+
+        Parameters
+        ----------
+        img : image
+            image to be normalized and rescaled
+
+        Returns
+        -------
+        image
+            normalaized and rescaled image
+        '''
         rescaled = cv2.normalize(img, dst=None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
         return rescaled
 
     def denoise(self, img):
+        '''
+        Denoise the image using non-local means algorithm
+
+        Parameters
+        ----------
+        img : image
+            image to be denoised
+
+        Returns
+        -------
+        image
+            smoothed denoised image
+        '''
 
         patch_kw = dict(patch_size=5, patch_distance=6)
         sigma_est = np.mean(estimate_sigma(img))
@@ -199,6 +287,21 @@ class DataGenerator:
         return denoised
 
     def gamma_correction(self, img, gamma=1.0):
+        '''
+        Perform gamma correction. The true value of gamma used in the formula is 1/gamma.
+
+        Parameters
+        ----------
+        img : image
+            image to be filtered
+        gamma : float, optional
+            gamma value, by default 1.0
+
+        Returns
+        -------
+        image
+            gamma corrected image
+        '''
         igamma = 1.0 / gamma
         imin, imax = img.min(), img.max()
 
@@ -229,8 +332,6 @@ class DataGenerator:
         images = [pydicom.dcmread(f).pixel_array for f in c_sources]
         labels = [cv2.imread(f, 0) for f in c_labels]
 
-        # crop
-        # images, labels = zip(*[self.crop(im, lbl) for im, lbl in zip(images, labels)])
 
         # check size
 

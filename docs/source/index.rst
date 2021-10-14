@@ -33,7 +33,7 @@ Usage Example
 =============
 
 Once you have installed it, you can start to segment the images directly from your bash.
-The input ```--dir``` is the path of the dir containing the DICOM series.
+The input ``--dir`` is the path of the dir containing the DICOM series.
 Please ensure that the folder contains only one series.
 If the directory is a nested dir, the script will find automatically the sub-dir containing the DICOM series.
 

@@ -7,7 +7,7 @@ The modules are the following, each of them provides a different kind of functio
 MRIsegm.datagenerators 
 ----------------------
 
-This module contains the implementation of a method to generate data for training a U-Net model.
+This module contains the implementation of DataGenerators.
 
 .. automodule:: MRIsegm.datagenerators
    :members:
@@ -57,7 +57,7 @@ This module contains the implementation of a U-net model.
 MRIsegm.processing
 ------------------
 
-This module contains methods to perform operations such as denoising, resizing, thresholding.
+This module contains methods to perform operations such as denoising, resizing, gamma correction.
 
 .. automodule:: MRIsegm.processing
    :members:

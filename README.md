@@ -2,7 +2,7 @@
 |:------------:|:-----------:|:-----------------:|:-----------:|:----------------:|:------------:|
 | [**G. Filitto**](https://github.com/giuseppefilitto) | **MRI colorectal cancer segmentation** | **Linux** : ![linux](https://img.shields.io/travis/com/giuseppefilitto/img-segm?logo=linux&logoColor=white)  | ![license](https://img.shields.io/github/license/giuseppefilitto/img-segm)| **Codacy** : [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6711ffd702bd4686a98f45deb0b3a952)](https://www.codacy.com/gh/giuseppefilitto/img-segm/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=giuseppefilitto/img-segm&amp;utm_campaign=Badge_Grade) <br/> **Codebeat** : [![codebeat badge](https://codebeat.co/badges/06042d9c-8e66-4417-85af-2509891fa28c)](https://codebeat.co/projects/github-com-giuseppefilitto-img-segm-main) | [![codecov](https://codecov.io/gh/giuseppefilitto/img-segm/branch/main/graph/badge.svg?token=2POF72SN06)](https://codecov.io/gh/giuseppefilitto/img-segm) |
 
-[![Documentation Status](https://readthedocs.org/projects/img-segm/badge/?version=latest)](https://img-segm.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/img-segm/badge/?version=latest)](https://img-segm.readthedocs.io/?badge=latest)
 
 [![GitHub stars](https://img.shields.io/github/stars/giuseppefilitto/img-segm?style=social)](https://github.com/giuseppefilitto/img-segm/stargazers)
 [![GitHub watchers](https://img.shields.io/github/watchers/giuseppefilitto/img-segm.svg?label=Watch&style=social)](https://github.com/giuseppegilitto/img-segm/watchers)
@@ -44,7 +44,7 @@ The segmentation is achieved with a Convolutional Neural Network like U-Net.
 
 <p align="center">    
    <img src="./extras/imgs/11.png" width="300" height="300" />
-   <img src="./extras/imgs/11_contoured.png"  width="300" height="300"/>
+   <img src="./extras/imgs/11_cont.png"  width="300" height="300"/>
 
  </p>
 
@@ -65,7 +65,7 @@ For a better description of each module:
 | utils | methods to load and visualize the DICOM series and the relative Region Of Interest (ROI)|
 | processing | methods to perform operations such as denoising, resizing, predict the images |
 | models | contains the implementation of a U-net model|
-| datagenerators | contains a  method to generate data for training the model |
+| datagenerators | contains methods to generate data for training the model |
 | metrics | contains useful metrics for training the model |
 |losses | 	contains useful losses for training the model |
 |graphics| methods to display the predictions |
@@ -137,7 +137,7 @@ If the directory is a nested dir, the script will find automatically the sub-dir
 _where_:
 * ```--dir ``` is the path of the directory containing the DICOM series (required).
 
-<img src="./extras/imgs/Usage.png">
+<img src="./extras/imgs/example_quickstart.png">
 
 #### Options
 
@@ -149,7 +149,7 @@ _where_:
 ```
 
  _notes_:
- * ``` model_name``` set as default:```efficientnetb0_256_256_BTC=8_alpha3_OPT=Adam_LOSS=DiceBCEloss```
+ * ``` model_name``` set as default:```efficientnetb0_BTC=4_full_150E_OPT=adam_LOSS=dice_loss_plus_1binary_focal_loss```
  * Remember to specify the name without```_weights.h5```
  * you can also use your own model's weight saving the weights in the [``` weights```](https://github.com/giuseppefilitto/img-segm/tree/main/data/models/weights) dir as ``` model_name_weights.h5```. 
 >:warning: You need to save also the architecture  as ``` model_name.json``` file in the same dir.
@@ -160,7 +160,7 @@ When enabled plot the predicted binary [0, 1] mask of each slice.
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --mask
 ```
-<img src="./extras/imgs/usage_mask.png">
+<img src="./extras/imgs/example_mask.png">
 
 #### ``` --density``` 
 
@@ -168,7 +168,7 @@ When enabled plot the predicted probability map between 0. and 1. of each slice 
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --density
 ```
-<img src="./extras/imgs/usage_density.png">
+<img src="./extras/imgs/example_density.png">
 
 #### ``` --3D```  
 
@@ -176,37 +176,35 @@ When enabled plot the a 3D mesh of the segmented areas.
 ```bash
    python -m MRIsegm --dir='/path/to/input/series/'  --3D
 ```
-<img src="./extras/imgs/usage_3D.png">
+<img src="./extras/imgs/example_3D.png">
 
 ### Examples
 
 Several examples are available under the [notebooks](https://github.com/giuseppefilitto/img-segm/blob/master/notebooks) dir.
 
-For each purpose:
+__Segmentation__:
 
 | **Purpose** | **Example** |
 |:----------:|:---------------:|
 | load, visualize DICOM series  |  [DicomExplorer](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/DicomExplorer.ipynb)   |
-| perform Image processing operations  |  [ImageProcessing](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/ImageProcessing.ipynb)  |
-|   Pre-process the images for model training |   [Pre-processing](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Pre-processing.ipynb)  |
+| perform Image processing operations  |  [ImageProcessing](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Processing.ipynb)  |
+|   Prepare the data for model training |   [PrepareData](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/PrepareData.ipynb)  |
 |  train a U-net model |    [UNet-Segmentation](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/UNet-Segmentation.ipynb) |
-|       train a model from [segmentation-models](https://github.com/qubvel/segmentation_models)|  [SM-Segmentation](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/SM-Segmentation.ipynb)   |
-|    Display the predictions  |      [Predictions](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Predictions.ipynb)   |
-|    Save the predicted image   |     [Store_Predictions](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Store_predictions.ipynb)     |
+|       train a model from [segmentation-models](https://github.com/qubvel/segmentation_models)|  [Segmentation](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Segmentation.ipynb)   |
+|    Display the predictions  |      [VisualizePredictions](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/VisualizePredictions.ipynb)   |
+|    Save the predicted image   |     [SavePredictions](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/SavePredictions.ipynb)     |
 |   Convert model to model's weights   |      [ConverterToWeights](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/ConverterToWeights.ipynb) |
 | plot 3D mesh| [3D-mesh](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/3D-mesh.ipynb)  | 
 
 
-__features extraction (extras)__:
-> :warning: WORK IN PROGRESS! Require [SimpleITK](https://simpleitk.readthedocs.io/en/master/gettingStarted.html#python-binary-files) and [pyradiomics](https://pyradiomics.readthedocs.io/en/latest/installation.html). Please ensure to have them installed.
-
+__features analysis__:
 
 | **Purpose** | **Example** |
 |:----------:|:---------------:|
 |  Feature Extraction   |    [FeaturesExtraction](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/FeaturesExtraction.ipynb) |
-|   Features Clustering      |  [Features Clustering](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/FeaturesClustering.ipynb) |
+|   Features Analysis     |  [Features Analysis](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/FeaturesAnalysis.ipynb) |
 |   Write .dcm files   |    [Writedicom](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/Writedicom.ipynb)   |
-|    Write .nrrd files     |   [sitkvolumeR](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/sitkvolumeR.ipynb)   |
+|    Write .nrrd files     |   [sitkvolumeR2](https://github.com/giuseppefilitto/img-segm/blob/main/notebooks/SitkVolumeR2.ipynb)   |
 ## License
 
 This package is licensed under the MIT "Expat" License.

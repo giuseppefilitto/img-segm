@@ -1,11 +1,13 @@
 numpy
 matplotlib
+seaborn
 opencv-python
 scikit-image
 read_roi
 pydicom
 tensorflow>=2.5.0
-
+SimpleITK
+pyradiomics
 
 # testing
 pytest

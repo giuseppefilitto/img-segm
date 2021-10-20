@@ -56,7 +56,7 @@ img-segm is composed of a series of modules contained in [MRIsegm](https://githu
 - modules allow one to load, visualize, processing the DICOM series and to train a [U-Net](https://github.com/giuseppefilitto/img-segm/blob/main/extras/U-Net%20arch.jpeg) model. 
 - scripts provide a fast way to handle DICOM series and ROI from command line.
 
-The documentation can be found [here](https://img-segm.readthedocs.io/en/latest/?badge=latest).
+The documentation can be found [here](https://img-segm.readthedocs.io).
 
 For a better description of each module:
 

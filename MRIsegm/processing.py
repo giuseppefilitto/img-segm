@@ -26,7 +26,7 @@ def otsu_thresholding(img, **kwargs):
         ksize = kwargs.get("ksize")
         img = cv2.GaussianBlur(img, (ksize, ksize), 0)
 
-    ret, th = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    _, th = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
     return th
 
@@ -314,7 +314,7 @@ def contour_slices(slices, predicted_slices):
     return contoured_slices
 
 
-def crop_image(img):
+def crop_image(img):  # pragma: no cover
     '''
     Crop full image to center from 512x512 to 256 x 256
 
@@ -329,7 +329,7 @@ def crop_image(img):
         cropped image
     '''
 
-    height, width = img.shape[0], img.shape[1]
+    height, _ = img.shape[0], img.shape[1]
 
     if height != 512:
         img = cv2.resize(img, (512, 512))
@@ -342,7 +342,7 @@ def crop_image(img):
     return (img[(y - dy):(y + dy), (x - dx):(x + dx)])
 
 
-def rescale(img):
+def rescale(img):  # pragma: no cover
     '''
     Normalize and rescale image to binary floating 32-bit
 
@@ -360,7 +360,7 @@ def rescale(img):
     return rescaled
 
 
-def denoise(img, alpha=10):
+def denoise(img, alpha=10):  # pragma: no cover
     '''
     Denoise the image using non-local means algorithm
 
@@ -383,7 +383,7 @@ def denoise(img, alpha=10):
     return denoised
 
 
-def gamma_correction(img, gamma=1.0):
+def gamma_correction(img, gamma=1.0):  # pragma: no cover
     '''
     Perform gamma correction. The true value of gamma used in the formula is 1/gamma.
 
@@ -481,7 +481,7 @@ def predict_images(slices, model, pre_processing=False, t=0.1):
     return predicted_slices
 
 
-def crop_masks(slices):
+def crop_masks(slices):  # pragma: no cover
     '''
     Crop slices of masks
 

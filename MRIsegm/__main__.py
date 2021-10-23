@@ -133,7 +133,7 @@ def main():
     try:
         slices = get_slices(dir_path, uint8=False)
     except:
-        for root, dirs, files in os.walk(dir_path):
+        for root, _, files in os.walk(dir_path):
             for file in files:
                 if file.endswith(".dcm"):
                     dir_path = root
@@ -227,14 +227,14 @@ def main():
         from matplotlib.colors import LightSource
 
         predicted_sq = np.squeeze(predicted, axis=-1)
-        verts, faces, normals, values = marching_cubes(predicted_sq)
+        verts, faces, normals, _ = marching_cubes(predicted_sq)
         ls = LightSource(azdeg=225.0, altdeg=45.0)
 
         normalsarray = np.array([np.array((np.sum(normals[face[:], 0] / 3), np.sum(normals[face[:], 1] / 3), np.sum(normals[face[:], 2] / 3)) / np.sqrt(np.sum(normals[face[:], 0] / 3)**2 + np.sum(normals[face[:], 1] / 3)**2 + np.sum(normals[face[:], 2] / 3)**2)) for face in faces])
 
-        min = np.min(ls.shade_normals(normalsarray, fraction=1.0))  # min shade value
-        max = np.max(ls.shade_normals(normalsarray, fraction=1.0))  # max shade value
-        diff = max - min
+        min_ = np.min(ls.shade_normals(normalsarray, fraction=1.0))  # min shade value
+        max_ = np.max(ls.shade_normals(normalsarray, fraction=1.0))  # max shade value
+        diff = max_ - min_
         newMin = 0.3
         newMax = 0.95
         newdiff = newMax - newMin

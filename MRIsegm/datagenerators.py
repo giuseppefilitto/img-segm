@@ -10,7 +10,7 @@ __author__ = ['Giuseppe Filitto']
 __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 
-def create_segmentation_generator(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEED, data_gen_args_img, data_gen_args_mask):
+def create_segmentation_generator(img_path, mask_path, BATCH_SIZE, IMG_SIZE, SEED, data_gen_args_img, data_gen_args_mask):  # pragma: no cover
     '''
 
     Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the ground-truth. The data generation is performed using data_gen_args_img and data_gen_args_mask.
@@ -162,7 +162,7 @@ class DataGenerator:
             resized input and label image
         '''
 
-        height, width = img.shape[0], img.shape[1]
+        height, _ = img.shape[0], img.shape[1]
 
         if height != 512:
             img = cv2.resize(img, (512, 512))

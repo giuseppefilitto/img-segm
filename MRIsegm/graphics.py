@@ -7,7 +7,7 @@ __author__ = ['Giuseppe Filitto']
 __email__ = ['giuseppe.filitto@studio.unibo.it']
 
 
-def display(display_list, colormap=False, cmap='gist_heat', norm=True):
+def display(display_list, colormap=False, cmap='gist_heat', norm=True):  # pragma: no cover
     '''
 
     Display a list of images: 'Input image', 'Ground-truth', 'Predicted'. It is possible to show the predicted image using a matplotlib cmap setting colormap as True.
@@ -53,7 +53,7 @@ def display(display_list, colormap=False, cmap='gist_heat', norm=True):
     plt.show()
 
 
-def show_dataset(datagen, num=1):
+def show_dataset(datagen, num=1):  # pragma: no cover
     '''
 
     Show a given number 'num' of tuples of images created using datagenerator (i.e. create_segmentation_generator).
@@ -73,7 +73,7 @@ def show_dataset(datagen, num=1):
         display([image[0], mask[0]])
 
 
-def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=True, custom_loss=False, **kwargs):
+def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=True, custom_loss=False, **kwargs):  # pragma: no cover
     '''
 
     Show the model history such as metrics and loss for both training and validation using 'seaborn' style.
@@ -154,7 +154,7 @@ def plot_history(model_name, history, metrics, loss, save=True, custom_metrics=T
     plt.show()
 
 
-def show_prediction(datagen, model, num=1, colormap=True, cmap='gist_heat', norm=True):
+def show_prediction(datagen, model, num=1, colormap=True, cmap='gist_heat', norm=True):  # pragma: no cover
     '''
 
     Show a given number 'num' of a series of image from datagenerator. The first of the series is the input image, the second one is ground-truth and the last one is the predicted image by the given model. The predicted image is shown using a sequential colormap.
@@ -182,7 +182,7 @@ def show_prediction(datagen, model, num=1, colormap=True, cmap='gist_heat', norm
         display([image[0], mask[0], pred_mask[0]], colormap, cmap, norm)
 
 
-def display_predictions(display_list, keys, colormap=True, cmap='gist_heat', figsize=(25, 15)):
+def display_predictions(display_list, keys, colormap=True, cmap='gist_heat', figsize=(25, 15)):  # pragma: no cover
     '''
 
     Display the ground-truth image and the predicted images from a list using a matplotlib colormap (setting colormap as True).
@@ -218,7 +218,7 @@ def display_predictions(display_list, keys, colormap=True, cmap='gist_heat', fig
     plt.show()
 
 
-def show_multiple_predictions(datagen, keys, values, num=1, colormap=True, cmap='gist_heat', figsize=(25, 15)):
+def show_multiple_predictions(datagen, keys, values, num=1, colormap=True, cmap='gist_heat', figsize=(25, 15)):  # pragma: no cover
     '''
 
     Show a given number 'num' of predicted images by the given models from datagenerator. The first one is the ground-truth.Each predicted image is shown using a matplotlib sequential colormap.
@@ -248,7 +248,7 @@ def show_multiple_predictions(datagen, keys, values, num=1, colormap=True, cmap=
         plt.show()
 
 
-def display_overlap(display_list, keys, colormap=True, cmap='gist_heat', figsize=(25, 15)):
+def display_overlap(display_list, keys, colormap=True, cmap='gist_heat', figsize=(25, 15)):  # pragma: no cover
     '''
     Display the ground-truth image and the predicted images from a list using a matplotlib colormap (setting colormap as True), over the original images.
 
@@ -272,7 +272,7 @@ def display_overlap(display_list, keys, colormap=True, cmap='gist_heat', figsize
         plt.title(title[i - 1])
         if i >= 2 and colormap:
             ax = plt.gca()
-            im_0 = ax.imshow(display_list[0], cmap='gray', vmin=0.0, vmax=1.0)
+            # im_0 = ax.imshow(display_list[0], cmap='gray', vmin=0.0, vmax=1.0)
             display_list[i][display_list[i] <= 0.05] = np.nan
             im = ax.imshow(display_list[i], cmap=cmap, vmin=0.0, vmax=1.0, alpha=0.75)
             if i == len(display_list) - 1:
@@ -285,7 +285,7 @@ def display_overlap(display_list, keys, colormap=True, cmap='gist_heat', figsize
     plt.show()
 
 
-def show_multiple_overlap(datagen, keys, values, num=1, colormap=True, cmap='gray', figsize=(25, 15)):
+def show_multiple_overlap(datagen, keys, values, num=1, colormap=True, cmap='gray', figsize=(25, 15)):  # pragma: no cover
     '''
 
     Show a given number 'num' of predicted images by the given models from datagenerator, over the original images. The first one is the ground-truth. Each predicted image is shown using a matplotlib sequential colormap(setting colormap as 'True').
@@ -307,7 +307,7 @@ def show_multiple_overlap(datagen, keys, values, num=1, colormap=True, cmap='gra
     figsize : tuple, optional
         figure size, by default (25, 15).
     '''
-    for i in range(0, num):
+    for _ in range(0, num):
         image, mask = next(datagen)
         pred_masks = [model.predict(image) for model in values]
         disp_list = [image[0]] + [mask[0]] + [pred_masks[j][0] for j in range(len(pred_masks))]

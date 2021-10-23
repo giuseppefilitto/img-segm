@@ -26,9 +26,9 @@ cancer areas on T2-weighted Magnetic Resonance Images of patient affected by col
 
 
 .. image :: ../../extras/imgs/11.png
-   :width: 300
+    :width: 300
 .. image :: ../../extras/imgs/11_cont.png
-   :width: 300
+    :width: 300
 
 **Example of segmentation** . **Left):** Original MRI scan of a patient affected by colorectal cancer. **Right):** Original MRI scan of a patient affected by colorectal cancer with identified tumor area.
 

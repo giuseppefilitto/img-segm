@@ -11,5 +11,3 @@ sphinx==4.1.2
 sphinx-rtd-theme
 sphinxcontrib-napoleon
 sphinxcontrib-programoutput
-nbsphinx==0.8.7
-IPython

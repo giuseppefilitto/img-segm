@@ -44,7 +44,7 @@ def get_predicted_strategy(draw):
 
     weights_dir = 'data/models/weights'
 
-    arch_list = glob.glob(weights_dir + '/*.json')
+    arch_list = glob.glob(weights_dir + '/*256*.json')
     chosen_arch = draw(st.just(random.choice(arch_list)))
 
     model_weights = chosen_arch.replace('.json', '_weights.h5')
@@ -78,7 +78,7 @@ def get_model_strategy(draw):
 
     weights_dir = 'data/models/weights'
 
-    arch_list = glob.glob(weights_dir + '/*.json')
+    arch_list = glob.glob(weights_dir + '/*256*.json')
     chosen_arch = draw(st.just(random.choice(arch_list)))
 
     model_weights = chosen_arch.replace('.json', '_weights.h5')

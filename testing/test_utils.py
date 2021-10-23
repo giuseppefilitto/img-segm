@@ -43,7 +43,7 @@ def test_get_slices(dir_path):
     '''
     files = glob.glob(dir_path + '/*.dcm')
     number_of_slices = len(files)
-    slices = get_slices(dir_path)
+    slices = get_slices(dir_path, uint8=True)
 
     file = pydicom.read_file(files[0], force=True)
     IMG_SIZE = (file.get("Rows"), file.get("Columns"))

@@ -272,7 +272,7 @@ def display_overlap(display_list, keys, colormap=True, cmap='gist_heat', figsize
         plt.title(title[i - 1])
         if i >= 2 and colormap:
             ax = plt.gca()
-            # im_0 = ax.imshow(display_list[0], cmap='gray', vmin=0.0, vmax=1.0)
+            im_0 = ax.imshow(display_list[0], cmap='gray', vmin=0.0, vmax=1.0)
             display_list[i][display_list[i] <= 0.05] = np.nan
             im = ax.imshow(display_list[i], cmap=cmap, vmin=0.0, vmax=1.0, alpha=0.75)
             if i == len(display_list) - 1:

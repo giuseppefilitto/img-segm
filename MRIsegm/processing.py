@@ -282,7 +282,7 @@ def write_contour(slices, predicted_slices, layer):  # pragma: no cover
     ori = np.expand_dims(original, axis=2).repeat(3, axis=2)
 
     for k, _ in enumerate(contours):
-        cv2.drawContours(ori, contours, k, (255, 0, 0), 1)
+        cv2.drawContours(ori, contours, k, (255, 0, 0), 2)
 
     return ori
 

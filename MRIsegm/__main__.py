@@ -232,9 +232,9 @@ def main():
 
         normalsarray = np.array([np.array((np.sum(normals[face[:], 0] / 3), np.sum(normals[face[:], 1] / 3), np.sum(normals[face[:], 2] / 3)) / np.sqrt(np.sum(normals[face[:], 0] / 3)**2 + np.sum(normals[face[:], 1] / 3)**2 + np.sum(normals[face[:], 2] / 3)**2)) for face in faces])
 
-        min_ = np.min(ls.shade_normals(normalsarray, fraction=1.0))  # min shade value
-        max_ = np.max(ls.shade_normals(normalsarray, fraction=1.0))  # max shade value
-        diff = max_ - min_
+        min = np.min(ls.shade_normals(normalsarray, fraction=1.0))  # min shade value
+        max = np.max(ls.shade_normals(normalsarray, fraction=1.0))  # max shade value
+        diff = max - min
         newMin = 0.3
         newMax = 0.95
         newdiff = newMax - newMin

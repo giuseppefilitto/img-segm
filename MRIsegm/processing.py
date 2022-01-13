@@ -444,7 +444,7 @@ def pre_processing_data(slices, alpha=10):
     return images
 
 
-def predict_images(slices, model, pre_processing=False, t=0.1):
+def predict_images(slices, model, pre_processing=False, t=0.05):
     '''
     Predict full stack of slices, slice by slice
 
@@ -475,7 +475,7 @@ def predict_images(slices, model, pre_processing=False, t=0.1):
     for layer in range(slices.shape[0]):
         img = prep_slices[layer, ...]
         predicted_slices[layer, ...] = model.predict(img[np.newaxis, ...])[...]
-        predicted_slices[layer, ...] = np.where(predicted_slices[layer, ...] <= 0.1, 0, predicted_slices[layer, ...])
+        predicted_slices[layer, ...] = np.where(predicted_slices[layer, ...] <= t, 0, predicted_slices[layer, ...])
 
 
     return predicted_slices

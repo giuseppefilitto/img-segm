@@ -193,7 +193,7 @@ def make_mask(slices, layer, rois):
 
     else:
 
-        background = np.zeros_like(slices[layer, :, :])
+        background = np.zeros_like(slices[layer, ...])
 
         roi = list(filter(lambda d: d['position'] == layer + 1, rois))
 
@@ -202,7 +202,7 @@ def make_mask(slices, layer, rois):
 
         points = []
         for i in range(len(x)):
-            pts = np.array([(x, y) for(x, y) in zip(
+            pts = np.array([(int(x), int(y)) for(x, y) in zip(
                 x[i], y[i])])
             points.append(pts)
 
@@ -377,5 +377,7 @@ def display_images(display_list, figsize=(12, 8), **kwargs):  # pragma: no cover
                 plt.title(titles[i], fontsize=fontsize)
             else:
                 plt.title(titles[i])
+        if kwargs.get('axis'):
+            plt.axis(kwargs.get('axis'))
 
     plt.show()
